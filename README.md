@@ -1,2 +1,2 @@
-# sms
-**school management system**
+# school management system
+**This is my college project**
