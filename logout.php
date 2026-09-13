@@ -21,7 +21,9 @@ if (ini_get("session.use_cookies")) {
 // Destroy session
 session_destroy();
 
-// Redirect to login page
-header("Location: login.php");
+// Redirect to clean login path
+$root_path = isset($root_path) ? $root_path : '';
+header("Location: " . $root_path . "login");
+echo '<script>window.location.href = "' . $root_path . 'login";</script>';
 exit();
 ?>

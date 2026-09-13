@@ -1,0 +1,25 @@
+# ==========================================================
+# School Management System - Clean URL & Security Rules
+# Ready for InfinityFree, Apache, XAMPP, WAMP & cPanel
+# ==========================================================
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+
+# 1. Rewrite /login and /login/ to login.php
+RewriteRule ^login/?$ login.php [L,QSA]
+
+# 2. Rewrite /logout and /logout/ to logout.php
+RewriteRule ^logout/?$ logout.php [L,QSA]
+
+# 3. Remove .php extension from URLs if requested without .php
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}\.php -f
+RewriteRule ^([^\.]+)$ $1.php [NC,L,QSA]
+</IfModule>
+
+# Prevent directory listings
+Options -Indexes
+
+# Set default index file
+DirectoryIndex index.php index.html

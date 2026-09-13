@@ -93,7 +93,7 @@ $user_role = isset($_SESSION['role']) ? $_SESSION['role'] : 'Admin';
                 <div class="user-name"><?php echo htmlspecialchars($user_name); ?></div>
                 <div class="user-role"><?php echo htmlspecialchars($user_role); ?></div>
             </div>
-            <a href="<?php echo $root_path; ?>logout.php" title="Sign Out" style="color: var(--text-muted); display:flex;">
+            <a href="<?php echo $root_path; ?>logout" title="Sign Out" style="color: var(--text-muted); display:flex;">
                 <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                 </svg>
