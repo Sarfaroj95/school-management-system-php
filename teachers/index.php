@@ -7,6 +7,7 @@ include "../connection.php";
 
 $root_path = '../';
 include "../includes/auth.php";
+require_role(['Super Admin', 'Admin', 'Staff', 'Teacher']);
 
 $page_title = "Teachers Directory";
 $header_title = "Teachers & Faculty";
@@ -45,7 +46,9 @@ include "../includes/header.php";
             </svg>
             Faculty Members (<?php echo count($teachers); ?>)
         </div>
-        <a href="create.php" class="btn btn-primary btn-sm">+ Add New Teacher</a>
+        <?php if (can_manage_teachers()): ?>
+            <a href="create.php" class="btn btn-primary btn-sm">+ Add New Teacher</a>
+        <?php endif; ?>
     </div>
 
     <!-- Filter & Search Toolbar -->
@@ -77,7 +80,7 @@ include "../includes/header.php";
                 <?php if (empty($teachers)): ?>
                     <tr>
                         <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 40px;">
-                            No teacher records found. Click "+ Add New Teacher" to register faculty.
+                            No teacher records found.
                         </td>
                     </tr>
                 <?php else: ?>
@@ -101,8 +104,15 @@ include "../includes/header.php";
                             </td>
                             <td style="text-align: right;">
                                 <div style="display: inline-flex; gap: 6px;">
-                                    <a href="edit.php?id=<?php echo $t['id']; ?>" class="btn btn-secondary btn-sm" title="Edit Teacher">Edit</a>
-                                    <a href="delete.php?id=<?php echo $t['id']; ?>" class="btn btn-danger btn-sm btn-delete-confirm" data-name="<?php echo htmlspecialchars($t['name']); ?>" title="Delete Teacher">Delete</a>
+                                    <?php if (can_manage_teachers()): ?>
+                                        <a href="edit.php?id=<?php echo $t['id']; ?>" class="btn btn-secondary btn-sm" title="Edit Teacher">Edit</a>
+                                    <?php endif; ?>
+                                    <?php if (can_delete()): ?>
+                                        <a href="delete.php?id=<?php echo $t['id']; ?>" class="btn btn-danger btn-sm btn-delete-confirm" data-name="<?php echo htmlspecialchars($t['name']); ?>" title="Delete Teacher">Delete</a>
+                                    <?php endif; ?>
+                                    <?php if (!can_manage_teachers() && !can_delete()): ?>
+                                        <span style="color: var(--text-muted); font-size: 12px;">View Only</span>
+                                    <?php endif; ?>
                                 </div>
                             </td>
                         </tr>

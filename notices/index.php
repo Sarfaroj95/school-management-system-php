@@ -7,6 +7,7 @@ include "../connection.php";
 
 $root_path = '../';
 include "../includes/auth.php";
+require_role(['Super Admin', 'Admin', 'Staff', 'Teacher', 'Student']);
 
 $page_title = "Notice Board";
 $header_title = "School Announcements";
@@ -14,9 +15,14 @@ $current_page = "notices";
 
 $audience_filter = isset($_GET['audience']) ? trim($_GET['audience']) : '';
 
+// Role-aware audience filtering
 if (!empty($audience_filter)) {
     $stmt = $conn->prepare("SELECT * FROM notices WHERE target_audience = ? OR target_audience = 'All' ORDER BY id DESC");
     $stmt->bind_param("s", $audience_filter);
+} elseif (has_role('Student')) {
+    $stmt = $conn->prepare("SELECT * FROM notices WHERE target_audience IN ('All', 'Students') ORDER BY id DESC");
+} elseif (has_role('Teacher')) {
+    $stmt = $conn->prepare("SELECT * FROM notices WHERE target_audience IN ('All', 'Teachers') ORDER BY id DESC");
 } else {
     $stmt = $conn->prepare("SELECT * FROM notices ORDER BY id DESC");
 }
@@ -44,7 +50,9 @@ include "../includes/header.php";
             </svg>
             Active Announcements (<?php echo count($notices); ?>)
         </div>
-        <a href="create.php" class="btn btn-primary btn-sm">+ Publish New Notice</a>
+        <?php if (can_manage_notices()): ?>
+            <a href="create.php" class="btn btn-primary btn-sm">+ Publish New Notice</a>
+        <?php endif; ?>
     </div>
 
     <!-- Audience Filter -->
@@ -65,7 +73,7 @@ include "../includes/header.php";
 
     <div class="card-body">
         <?php if (empty($notices)): ?>
-            <p style="text-align: center; color: var(--text-muted); padding: 40px;">No announcements found. Click "+ Publish New Notice" to create one.</p>
+            <p style="text-align: center; color: var(--text-muted); padding: 40px;">No announcements found.</p>
         <?php else: ?>
             <div style="display: flex; flex-direction: column; gap: 16px;">
                 <?php foreach ($notices as $n): ?>
@@ -81,10 +89,16 @@ include "../includes/header.php";
                                 <span class="badge <?php echo $p_class; ?>"><?php echo htmlspecialchars($n['priority']); ?></span>
                                 <span class="badge badge-purple"><?php echo htmlspecialchars($n['target_audience']); ?></span>
                             </div>
-                            <div style="display: flex; gap: 6px;">
-                                <a href="edit.php?id=<?php echo $n['id']; ?>" class="btn btn-secondary btn-sm">Edit</a>
-                                <a href="delete.php?id=<?php echo $n['id']; ?>" class="btn btn-danger btn-sm btn-delete-confirm" data-name="notice '<?php echo htmlspecialchars($n['title']); ?>'">Delete</a>
-                            </div>
+                            <?php if (can_manage_notices() || can_delete()): ?>
+                                <div style="display: flex; gap: 6px;">
+                                    <?php if (can_manage_notices()): ?>
+                                        <a href="edit.php?id=<?php echo $n['id']; ?>" class="btn btn-secondary btn-sm">Edit</a>
+                                    <?php endif; ?>
+                                    <?php if (can_delete()): ?>
+                                        <a href="delete.php?id=<?php echo $n['id']; ?>" class="btn btn-danger btn-sm btn-delete-confirm" data-name="notice '<?php echo htmlspecialchars($n['title']); ?>'">Delete</a>
+                                    <?php endif; ?>
+                                </div>
+                            <?php endif; ?>
                         </div>
 
                         <div class="notice-content" style="font-size: 14px; margin: 12px 0;">

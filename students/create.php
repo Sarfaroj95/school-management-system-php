@@ -7,6 +7,7 @@ include "../connection.php";
 
 $root_path = '../';
 include "../includes/auth.php";
+require_role(['Super Admin', 'Admin', 'Staff']);
 
 $page_title = "New Student Admission";
 $header_title = "Student Admission";
@@ -27,6 +28,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $gender = $_POST['gender'] ?? 'Male';
     $dob = $_POST['dob'] ?? '';
     $email = trim($_POST['email'] ?? '');
+    $raw_pass = trim($_POST['password'] ?? 'student123');
+    if (empty($raw_pass)) $raw_pass = 'student123';
+    $hashed_pass = password_hash($raw_pass, PASSWORD_DEFAULT);
     $phone = trim($_POST['phone'] ?? '');
     $class_id = intval($_POST['class_id'] ?? 0);
     $admission_date = $_POST['admission_date'] ?? date('Y-m-d');
@@ -40,17 +44,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         // Insert student using prepared statement
         $insert_stmt = $conn->prepare("INSERT INTO students 
-            (roll_no, first_name, last_name, gender, dob, email, phone, address, class_id, admission_date, parent_name, parent_phone, status) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            (roll_no, first_name, last_name, gender, dob, email, password, phone, address, class_id, admission_date, parent_name, parent_phone, status) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         
         if ($insert_stmt) {
-            $insert_stmt->bind_param("ssssssssissss", 
+            $insert_stmt->bind_param("sssssssssissss", 
                 $roll_no, 
                 $first_name, 
                 $last_name, 
                 $gender, 
                 $dob, 
-                $email, 
+                $email,
+                $hashed_pass,
                 $phone, 
                 $address, 
                 $class_id, 

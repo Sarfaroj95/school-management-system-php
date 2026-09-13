@@ -126,6 +126,7 @@ function ensure_tables_exist($conn) {
           `emp_id` VARCHAR(20) NOT NULL UNIQUE,
           `name` VARCHAR(100) NOT NULL,
           `email` VARCHAR(100) NOT NULL,
+          `password` VARCHAR(255) NOT NULL DEFAULT '$2y$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW',
           `phone` VARCHAR(20) NOT NULL,
           `qualification` VARCHAR(100) NOT NULL,
           `subject_specialization` VARCHAR(100) NOT NULL,
@@ -155,6 +156,7 @@ function ensure_tables_exist($conn) {
           `gender` ENUM('Male', 'Female', 'Other') NOT NULL,
           `dob` DATE NOT NULL,
           `email` VARCHAR(100) DEFAULT NULL,
+          `password` VARCHAR(255) NOT NULL DEFAULT '$2y$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW',
           `phone` VARCHAR(20) DEFAULT NULL,
           `address` TEXT NOT NULL,
           `class_id` INT(11) NOT NULL,
@@ -245,14 +247,16 @@ function ensure_tables_exist($conn) {
             // clear multi-query buffers
         }
 
-        // Insert Default Admin
+        // Insert Default Accounts
         $hash = '$2y$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW'; // hash for admin123
-        @mysqli_query($conn, "INSERT IGNORE INTO `admins` (`id`, `username`, `password`, `full_name`, `email`, `role`) VALUES (1, 'admin', '$hash', 'System Administrator', 'admin@schoolsms.edu', 'Super Admin')");
+        @mysqli_query($conn, "INSERT IGNORE INTO `admins` (`id`, `username`, `password`, `full_name`, `email`, `role`) VALUES 
+            (1, 'admin', '$hash', 'System Administrator', 'admin@schoolsms.edu', 'Super Admin'),
+            (2, 'staff', '$hash', 'Academic Staff Member', 'staff@schoolsms.edu', 'Staff')");
         
         // Insert sample classes & teachers
-        @mysqli_query($conn, "INSERT IGNORE INTO `teachers` (`id`, `emp_id`, `name`, `email`, `phone`, `qualification`, `subject_specialization`, `joining_date`, `salary`, `status`) VALUES 
-            (1, 'EMP101', 'Dr. Robert Jenkins', 'r.jenkins@schoolsms.edu', '+1 555-234-5678', 'Ph.D in Math', 'Mathematics', CURDATE(), 4800.00, 'Active'),
-            (2, 'EMP102', 'Sarah Mitchell', 's.mitchell@schoolsms.edu', '+1 555-345-6789', 'M.Sc in Physics', 'Physical Science', CURDATE(), 4200.00, 'Active')");
+        @mysqli_query($conn, "INSERT IGNORE INTO `teachers` (`id`, `emp_id`, `name`, `email`, `password`, `phone`, `qualification`, `subject_specialization`, `joining_date`, `salary`, `status`) VALUES 
+            (1, 'EMP101', 'Dr. Robert Jenkins', 'r.jenkins@schoolsms.edu', '$hash', '+1 555-234-5678', 'Ph.D in Math', 'Mathematics', CURDATE(), 4800.00, 'Active'),
+            (2, 'EMP102', 'Sarah Mitchell', 's.mitchell@schoolsms.edu', '$hash', '+1 555-345-6789', 'M.Sc in Physics', 'Physical Science', CURDATE(), 4200.00, 'Active')");
 
         @mysqli_query($conn, "INSERT IGNORE INTO `classes` (`id`, `class_name`, `section`, `room_no`, `teacher_id`, `capacity`) VALUES 
             (1, 'Grade 5', 'A', 'Room 101', 1, 35),
@@ -266,12 +270,24 @@ function ensure_tables_exist($conn) {
             (1, 'Mathematics', 'MATH-10', 6, 1),
             (2, 'Physics', 'PHY-10', 6, 2)");
 
-        @mysqli_query($conn, "INSERT IGNORE INTO `students` (`id`, `roll_no`, `first_name`, `last_name`, `gender`, `dob`, `email`, `phone`, `address`, `class_id`, `admission_date`, `parent_name`, `parent_phone`, `status`) VALUES 
-            (1, 'STD-1001', 'Alex', 'Johnson', 'Male', '2010-04-12', 'alex@example.com', '+1 555-0101', '742 Evergreen Terrace', 6, CURDATE(), 'Arthur Johnson', '+1 555-0199', 'Active'),
-            (2, 'STD-1002', 'Emma', 'Watson', 'Female', '2010-09-24', 'emma@example.com', '+1 555-0102', '124 Conch Street', 6, CURDATE(), 'Chris Watson', '+1 555-0198', 'Active')");
+        @mysqli_query($conn, "INSERT IGNORE INTO `students` (`id`, `roll_no`, `first_name`, `last_name`, `gender`, `dob`, `email`, `password`, `phone`, `address`, `class_id`, `admission_date`, `parent_name`, `parent_phone`, `status`) VALUES 
+            (1, 'STD-1001', 'Alex', 'Johnson', 'Male', '2010-04-12', 'alex@example.com', '$hash', '+1 555-0101', '742 Evergreen Terrace', 6, CURDATE(), 'Arthur Johnson', '+1 555-0199', 'Active'),
+            (2, 'STD-1002', 'Emma', 'Watson', 'Female', '2010-09-24', 'emma@example.com', '$hash', '+1 555-0102', '124 Conch Street', 6, CURDATE(), 'Chris Watson', '+1 555-0198', 'Active')");
 
         @mysqli_query($conn, "INSERT IGNORE INTO `notices` (`id`, `title`, `content`, `target_audience`, `priority`, `posted_by`) VALUES 
             (1, 'Welcome to EduCore SMS', 'The school management system is now active and ready for use.', 'All', 'Important', 'Administration')");
+    }
+
+    // Auto-migrate schema: Check if password column exists in teachers table
+    $check_teacher_pass = @mysqli_query($conn, "SHOW COLUMNS FROM `teachers` LIKE 'password'");
+    if ($check_teacher_pass && mysqli_num_rows($check_teacher_pass) === 0) {
+        @mysqli_query($conn, "ALTER TABLE `teachers` ADD COLUMN `password` VARCHAR(255) NOT NULL DEFAULT '$2y$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW' AFTER `email`");
+    }
+
+    // Auto-migrate schema: Check if password column exists in students table
+    $check_student_pass = @mysqli_query($conn, "SHOW COLUMNS FROM `students` LIKE 'password'");
+    if ($check_student_pass && mysqli_num_rows($check_student_pass) === 0) {
+        @mysqli_query($conn, "ALTER TABLE `students` ADD COLUMN `password` VARCHAR(255) NOT NULL DEFAULT '$2y$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW' AFTER `email`");
     }
 }
 

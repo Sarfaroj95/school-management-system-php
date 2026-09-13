@@ -7,6 +7,7 @@ include "../connection.php";
 
 $root_path = '../';
 include "../includes/auth.php";
+require_role(['Super Admin', 'Admin']);
 
 $mark_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 

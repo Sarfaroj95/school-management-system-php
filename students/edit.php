@@ -7,6 +7,7 @@ include "../connection.php";
 
 $root_path = '../';
 include "../includes/auth.php";
+require_role(['Super Admin', 'Admin', 'Staff']);
 
 $page_title = "Edit Student Profile";
 $header_title = "Update Student";

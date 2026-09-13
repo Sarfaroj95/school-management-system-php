@@ -8,15 +8,24 @@ include "../connection.php";
 $root_path = '../';
 include "../includes/auth.php";
 
-$page_title = "Student Profile";
-$header_title = "Student Details";
-$current_page = "students";
-
 $student_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+
+// If logged in as student, restrict to own profile
+if (has_role('Student')) {
+    $my_id = intval($_SESSION['student_id'] ?? 0);
+    if ($student_id !== $my_id) {
+        $student_id = $my_id;
+    }
+}
+
 if ($student_id <= 0) {
     header("Location: index.php");
     exit();
 }
+
+$page_title = "Student Profile";
+$header_title = "Student Details";
+$current_page = "students";
 
 // Fetch student details with class and teacher info
 $stmt = $conn->prepare("SELECT s.*, c.class_name, c.section, c.room_no, t.name AS teacher_name 
@@ -39,13 +48,13 @@ $marks_stmt = $conn->prepare("SELECT m.*, sub.subject_name, sub.subject_code
                              FROM marks m 
                              JOIN subjects sub ON m.subject_id = sub.id 
                              WHERE m.student_id = ? 
-                             ORDER BY m.exam_date DESC");
+                             ORDER BY m.id DESC");
 $marks_stmt->bind_param("i", $student_id);
 $marks_stmt->execute();
-$student_marks = $marks_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+$exam_marks = $marks_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 $marks_stmt->close();
 
-// Fetch student recent attendance
+// Fetch student attendance logs
 $att_stmt = $conn->prepare("SELECT * FROM attendance WHERE student_id = ? ORDER BY attendance_date DESC LIMIT 10");
 $att_stmt->bind_param("i", $student_id);
 $att_stmt->execute();
@@ -56,10 +65,18 @@ include "../includes/header.php";
 ?>
 
 <div style="margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center;">
-    <a href="index.php" class="btn btn-secondary btn-sm">&larr; Back to Students List</a>
+    <?php if (!has_role('Student')): ?>
+        <a href="index.php" class="btn btn-secondary btn-sm">&larr; Back to Students List</a>
+    <?php else: ?>
+        <a href="../index.php" class="btn btn-secondary btn-sm">&larr; Back to Dashboard</a>
+    <?php endif; ?>
     <div style="display: flex; gap: 8px;">
-        <a href="edit.php?id=<?php echo $student['id']; ?>" class="btn btn-primary btn-sm">Edit Profile</a>
-        <a href="delete.php?id=<?php echo $student['id']; ?>" class="btn btn-danger btn-sm btn-delete-confirm" data-name="<?php echo htmlspecialchars($student['first_name']); ?>">Delete</a>
+        <?php if (can_manage_students()): ?>
+            <a href="edit.php?id=<?php echo $student['id']; ?>" class="btn btn-primary btn-sm">Edit Profile</a>
+        <?php endif; ?>
+        <?php if (can_delete()): ?>
+            <a href="delete.php?id=<?php echo $student['id']; ?>" class="btn btn-danger btn-sm btn-delete-confirm" data-name="<?php echo htmlspecialchars($student['first_name']); ?>">Delete</a>
+        <?php endif; ?>
     </div>
 </div>
 

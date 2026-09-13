@@ -7,6 +7,7 @@ include "../connection.php";
 
 $root_path = '../';
 include "../includes/auth.php";
+require_role(['Super Admin', 'Admin', 'Staff', 'Teacher']);
 
 $page_title = "Attendance Reports";
 $header_title = "Attendance Analytics";

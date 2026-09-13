@@ -7,6 +7,7 @@ include "../connection.php";
 
 $root_path = '../';
 include "../includes/auth.php";
+require_role(['Super Admin', 'Admin']);
 
 $page_title = "Add New Teacher";
 $header_title = "Faculty Registration";
@@ -18,6 +19,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $emp_id = trim($_POST['emp_id'] ?? '');
     $name = trim($_POST['name'] ?? '');
     $email = trim($_POST['email'] ?? '');
+    $raw_pass = trim($_POST['password'] ?? 'teacher123');
+    if (empty($raw_pass)) $raw_pass = 'teacher123';
+    $hashed_pass = password_hash($raw_pass, PASSWORD_DEFAULT);
     $phone = trim($_POST['phone'] ?? '');
     $qualification = trim($_POST['qualification'] ?? '');
     $subject_specialization = trim($_POST['subject_specialization'] ?? '');
@@ -28,9 +32,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($emp_id) || empty($name) || empty($email) || empty($phone) || empty($qualification) || empty($subject_specialization)) {
         $error = 'Please fill in all mandatory fields marked with an asterisk (*).';
     } else {
-        $stmt = $conn->prepare("INSERT INTO teachers (emp_id, name, email, phone, qualification, subject_specialization, joining_date, salary, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt = $conn->prepare("INSERT INTO teachers (emp_id, name, email, password, phone, qualification, subject_specialization, joining_date, salary, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         if ($stmt) {
-            $stmt->bind_param("sssssssds", $emp_id, $name, $email, $phone, $qualification, $subject_specialization, $joining_date, $salary, $status);
+            $stmt->bind_param("ssssssssds", $emp_id, $name, $email, $hashed_pass, $phone, $qualification, $subject_specialization, $joining_date, $salary, $status);
             if ($stmt->execute()) {
                 $stmt->close();
                 header("Location: index.php?msg=created");

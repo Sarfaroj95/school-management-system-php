@@ -7,6 +7,7 @@ include "../connection.php";
 
 $root_path = '../';
 include "../includes/auth.php";
+require_role(['Super Admin', 'Admin', 'Staff', 'Teacher']);
 
 $page_title = "Classes & Sections";
 $header_title = "Academic Classes";
@@ -44,7 +45,9 @@ include "../includes/header.php";
             </svg>
             Classes & Grade Sections (<?php echo count($classes); ?>)
         </div>
-        <a href="create.php" class="btn btn-primary btn-sm">+ Add New Class</a>
+        <?php if (can_manage_classes()): ?>
+            <a href="create.php" class="btn btn-primary btn-sm">+ Add New Class</a>
+        <?php endif; ?>
     </div>
 
     <div class="table-responsive">
@@ -64,7 +67,7 @@ include "../includes/header.php";
                 <?php if (empty($classes)): ?>
                     <tr>
                         <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 40px;">
-                            No classes defined yet. Click "+ Add New Class" to create one.
+                            No classes defined yet.
                         </td>
                     </tr>
                 <?php else: ?>
@@ -84,8 +87,15 @@ include "../includes/header.php";
                             </td>
                             <td style="text-align: right;">
                                 <div style="display: inline-flex; gap: 6px;">
-                                    <a href="edit.php?id=<?php echo $c['id']; ?>" class="btn btn-secondary btn-sm">Edit</a>
-                                    <a href="delete.php?id=<?php echo $c['id']; ?>" class="btn btn-danger btn-sm btn-delete-confirm" data-name="<?php echo htmlspecialchars($c['class_name'] . ' Section ' . $c['section']); ?>">Delete</a>
+                                    <?php if (can_manage_classes()): ?>
+                                        <a href="edit.php?id=<?php echo $c['id']; ?>" class="btn btn-secondary btn-sm">Edit</a>
+                                    <?php endif; ?>
+                                    <?php if (can_delete()): ?>
+                                        <a href="delete.php?id=<?php echo $c['id']; ?>" class="btn btn-danger btn-sm btn-delete-confirm" data-name="<?php echo htmlspecialchars($c['class_name'] . ' Section ' . $c['section']); ?>">Delete</a>
+                                    <?php endif; ?>
+                                    <?php if (!can_manage_classes() && !can_delete()): ?>
+                                        <span style="color: var(--text-muted); font-size: 12px;">View Only</span>
+                                    <?php endif; ?>
                                 </div>
                             </td>
                         </tr>

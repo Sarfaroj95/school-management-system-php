@@ -24,10 +24,10 @@
   --primary-hover: #4338ca;
   --primary-light: rgba(79, 70, 229, 0.15);
   --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
-  
+
   --success: #10b981;
   --success-bg: rgba(16, 185, 129, 0.15);
-  
+
   --warning: #f59e0b;
   --warning-bg: rgba(245, 158, 11, 0.15);
 
@@ -57,7 +57,9 @@
 }
 
 /* Reset & Base */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -311,10 +313,10 @@ a {
   background: var(--bg-surface);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
-  padding: 22px;
+  padding: 14px 18px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
   position: relative;
   overflow: hidden;
   transition: var(--transition);
@@ -336,11 +338,25 @@ a {
   background: var(--primary);
 }
 
-.stat-card.indigo::before { background: #6366f1; }
-.stat-card.emerald::before { background: #10b981; }
-.stat-card.amber::before { background: #f59e0b; }
-.stat-card.rose::before { background: #f43f5e; }
-.stat-card.sky::before { background: #0ea5e9; }
+.stat-card.indigo::before {
+  background: #6366f1;
+}
+
+.stat-card.emerald::before {
+  background: #10b981;
+}
+
+.stat-card.amber::before {
+  background: #f59e0b;
+}
+
+.stat-card.rose::before {
+  background: #f43f5e;
+}
+
+.stat-card.sky::before {
+  background: #0ea5e9;
+}
 
 .stat-header {
   display: flex;
@@ -460,11 +476,30 @@ a {
   line-height: 1.3;
 }
 
-.badge-success { background: var(--success-bg); color: #34d399; }
-.badge-warning { background: var(--warning-bg); color: #fbbf24; }
-.badge-danger { background: var(--danger-bg); color: #f87171; }
-.badge-info { background: var(--info-bg); color: #38bdf8; }
-.badge-purple { background: rgba(168, 85, 247, 0.15); color: #c084fc; }
+.badge-success {
+  background: var(--success-bg);
+  color: #34d399;
+}
+
+.badge-warning {
+  background: var(--warning-bg);
+  color: #fbbf24;
+}
+
+.badge-danger {
+  background: var(--danger-bg);
+  color: #f87171;
+}
+
+.badge-info {
+  background: var(--info-bg);
+  color: #38bdf8;
+}
+
+.badge-purple {
+  background: rgba(168, 85, 247, 0.15);
+  color: #c084fc;
+}
 
 /* Buttons */
 .btn {
@@ -618,13 +653,34 @@ select.form-control {
 }
 
 @keyframes slideDown {
-  from { opacity: 0; transform: translateY(-8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.alert-success { background: var(--success-bg); border: 1px solid rgba(16, 185, 129, 0.3); color: #6ee7b7; }
-.alert-danger { background: var(--danger-bg); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; }
-.alert-info { background: var(--info-bg); border: 1px solid rgba(14, 165, 233, 0.3); color: #7dd3fc; }
+.alert-success {
+  background: var(--success-bg);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #6ee7b7;
+}
+
+.alert-danger {
+  background: var(--danger-bg);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+}
+
+.alert-info {
+  background: var(--info-bg);
+  border: 1px solid rgba(14, 165, 233, 0.3);
+  color: #7dd3fc;
+}
 
 /* Notice Card */
 .notice-item {
@@ -676,8 +732,8 @@ select.form-control {
   min-height: 100vh;
   width: 100vw;
   background: radial-gradient(circle at top right, rgba(79, 70, 229, 0.15), transparent 40%),
-              radial-gradient(circle at bottom left, rgba(6, 182, 212, 0.1), transparent 40%),
-              #0b0f19;
+    radial-gradient(circle at bottom left, rgba(6, 182, 212, 0.1), transparent 40%),
+    #0b0f19;
   padding: 24px;
 }
 

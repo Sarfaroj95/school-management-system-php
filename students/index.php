@@ -7,6 +7,7 @@ include "../connection.php";
 
 $root_path = '../';
 include "../includes/auth.php";
+require_role(['Super Admin', 'Admin', 'Staff', 'Teacher']);
 
 $page_title = "Students Directory";
 $header_title = "Students Management";
@@ -77,7 +78,9 @@ include "../includes/header.php";
             All Registered Students (<?php echo count($students); ?>)
         </div>
         <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-            <a href="create.php" class="btn btn-primary btn-sm">+ Admit New Student</a>
+            <?php if (can_manage_students()): ?>
+                <a href="create.php" class="btn btn-primary btn-sm">+ Admit New Student</a>
+            <?php endif; ?>
         </div>
     </div>
 
@@ -147,8 +150,12 @@ include "../includes/header.php";
                             <td style="text-align: right;">
                                 <div style="display: inline-flex; gap: 6px;">
                                     <a href="view.php?id=<?php echo $stu['id']; ?>" class="btn btn-secondary btn-sm" title="View Profile">View</a>
-                                    <a href="edit.php?id=<?php echo $stu['id']; ?>" class="btn btn-secondary btn-sm" title="Edit Student">Edit</a>
-                                    <a href="delete.php?id=<?php echo $stu['id']; ?>" class="btn btn-danger btn-sm btn-delete-confirm" data-name="<?php echo htmlspecialchars($stu['first_name'] . ' ' . $stu['last_name']); ?>" title="Delete Student">Delete</a>
+                                    <?php if (can_manage_students()): ?>
+                                        <a href="edit.php?id=<?php echo $stu['id']; ?>" class="btn btn-secondary btn-sm" title="Edit Student">Edit</a>
+                                    <?php endif; ?>
+                                    <?php if (can_delete()): ?>
+                                        <a href="delete.php?id=<?php echo $stu['id']; ?>" class="btn btn-danger btn-sm btn-delete-confirm" data-name="<?php echo htmlspecialchars($stu['first_name'] . ' ' . $stu['last_name']); ?>" title="Delete Student">Delete</a>
+                                    <?php endif; ?>
                                 </div>
                             </td>
                         </tr>

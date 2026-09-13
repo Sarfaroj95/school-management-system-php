@@ -7,6 +7,7 @@ include "../connection.php";
 
 $root_path = '../';
 include "../includes/auth.php";
+require_role(['Super Admin', 'Admin']);
 
 $page_title = "Edit Class";
 $header_title = "Update Class";

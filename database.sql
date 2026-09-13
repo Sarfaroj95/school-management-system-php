@@ -33,12 +33,15 @@ INSERT INTO `admins` (`id`, `username`, `password`, `full_name`, `email`, `role`
 -- --------------------------------------------------------
 -- Table: teachers
 -- --------------------------------------------------------
+-- Table: teachers
+-- --------------------------------------------------------
 DROP TABLE IF EXISTS `teachers`;
 CREATE TABLE `teachers` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `emp_id` VARCHAR(20) NOT NULL UNIQUE,
   `name` VARCHAR(100) NOT NULL,
   `email` VARCHAR(100) NOT NULL,
+  `password` VARCHAR(255) NOT NULL DEFAULT '$2y$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW',
   `phone` VARCHAR(20) NOT NULL,
   `qualification` VARCHAR(100) NOT NULL,
   `subject_specialization` VARCHAR(100) NOT NULL,
@@ -49,12 +52,12 @@ CREATE TABLE `teachers` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO `teachers` (`id`, `emp_id`, `name`, `email`, `phone`, `qualification`, `subject_specialization`, `joining_date`, `salary`, `status`, `created_at`) VALUES
-(1, 'EMP101', 'Dr. Robert Jenkins', 'r.jenkins@schoolsms.edu', '+1 (555) 234-5678', 'Ph.D in Mathematics', 'Mathematics', '2021-08-15', 4800.00, 'Active', NOW()),
-(2, 'EMP102', 'Sarah Mitchell', 's.mitchell@schoolsms.edu', '+1 (555) 345-6789', 'M.Sc in Physics', 'Physical Science', '2022-01-10', 4200.00, 'Active', NOW()),
-(3, 'EMP103', 'David Harrison', 'd.harrison@schoolsms.edu', '+1 (555) 456-7890', 'M.A in English Literature', 'English Language', '2020-07-01', 4100.00, 'Active', NOW()),
-(4, 'EMP104', 'Emily Rodriguez', 'e.rodriguez@schoolsms.edu', '+1 (555) 567-8901', 'M.Sc in Computer Science', 'Computer Science', '2023-02-14', 4500.00, 'Active', NOW()),
-(5, 'EMP105', 'Michael Chang', 'm.chang@schoolsms.edu', '+1 (555) 678-9012', 'M.Sc in Chemistry', 'Chemistry', '2021-11-20', 4300.00, 'Active', NOW());
+INSERT INTO `teachers` (`id`, `emp_id`, `name`, `email`, `password`, `phone`, `qualification`, `subject_specialization`, `joining_date`, `salary`, `status`, `created_at`) VALUES
+(1, 'EMP101', 'Dr. Robert Jenkins', 'r.jenkins@schoolsms.edu', '$2y$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', '+1 (555) 234-5678', 'Ph.D in Mathematics', 'Mathematics', '2021-08-15', 4800.00, 'Active', NOW()),
+(2, 'EMP102', 'Sarah Mitchell', 's.mitchell@schoolsms.edu', '$2y$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', '+1 (555) 345-6789', 'M.Sc in Physics', 'Physical Science', '2022-01-10', 4200.00, 'Active', NOW()),
+(3, 'EMP103', 'David Harrison', 'd.harrison@schoolsms.edu', '$2y$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', '+1 (555) 456-7890', 'M.A in English Literature', 'English Language', '2020-07-01', 4100.00, 'Active', NOW()),
+(4, 'EMP104', 'Emily Rodriguez', 'e.rodriguez@schoolsms.edu', '$2y$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', '+1 (555) 567-8901', 'M.Sc in Computer Science', 'Computer Science', '2023-02-14', 4500.00, 'Active', NOW()),
+(5, 'EMP105', 'Michael Chang', 'm.chang@schoolsms.edu', '$2y$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', '+1 (555) 678-9012', 'M.Sc in Chemistry', 'Chemistry', '2021-11-20', 4300.00, 'Active', NOW());
 
 -- --------------------------------------------------------
 -- Table: classes
@@ -93,6 +96,7 @@ CREATE TABLE `students` (
   `gender` ENUM('Male', 'Female', 'Other') NOT NULL,
   `dob` DATE NOT NULL,
   `email` VARCHAR(100) DEFAULT NULL,
+  `password` VARCHAR(255) NOT NULL DEFAULT '$2y$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW',
   `phone` VARCHAR(20) DEFAULT NULL,
   `address` TEXT NOT NULL,
   `class_id` INT(11) NOT NULL,
@@ -106,17 +110,17 @@ CREATE TABLE `students` (
   CONSTRAINT `fk_student_class` FOREIGN KEY (`class_id`) REFERENCES `classes` (`id`) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO `students` (`id`, `roll_no`, `first_name`, `last_name`, `gender`, `dob`, `email`, `phone`, `address`, `class_id`, `admission_date`, `parent_name`, `parent_phone`, `status`, `created_at`) VALUES
-(1, 'STD-1001', 'Alex', 'Johnson', 'Male', '2010-04-12', 'alex.j@example.com', '+1 555-0101', '742 Evergreen Terrace, Springfield', 6, '2023-06-01', 'Arthur Johnson', '+1 555-0199', 'Active', NOW()),
-(2, 'STD-1002', 'Emma', 'Watson', 'Female', '2010-09-24', 'emma.w@example.com', '+1 555-0102', '124 Conch Street, Bikini Bottom', 6, '2023-06-01', 'Chris Watson', '+1 555-0198', 'Active', NOW()),
-(3, 'STD-1003', 'Liam', 'Miller', 'Male', '2011-01-15', 'liam.m@example.com', '+1 555-0103', '221B Baker Street, London', 5, '2023-06-02', 'George Miller', '+1 555-0197', 'Active', NOW()),
-(4, 'STD-1004', 'Sophia', 'Davis', 'Female', '2011-06-30', 'sophia.d@example.com', '+1 555-0104', '31 Spooner Street, Quahog', 5, '2023-06-02', 'Mark Davis', '+1 555-0196', 'Active', NOW()),
-(5, 'STD-1005', 'Noah', 'Brown', 'Male', '2012-03-18', 'noah.b@example.com', '+1 555-0105', '4 Privet Drive, Little Whinging', 4, '2023-06-05', 'Daniel Brown', '+1 555-0195', 'Active', NOW()),
-(6, 'STD-1006', 'Olivia', 'Taylor', 'Female', '2012-07-22', 'olivia.t@example.com', '+1 555-0106', '1313 Mockingbird Lane, Mockingbird Hts', 4, '2023-06-05', 'Samuel Taylor', '+1 555-0194', 'Active', NOW()),
-(7, 'STD-1007', 'Lucas', 'Anderson', 'Male', '2013-05-11', 'lucas.a@example.com', '+1 555-0107', '704 Hauser Street, Queens', 3, '2023-06-10', 'Thomas Anderson', '+1 555-0193', 'Active', NOW()),
-(8, 'STD-1008', 'Ava', 'Wilson', 'Female', '2013-11-09', 'ava.w@example.com', '+1 555-0108', '1640 Riverside Drive, Hill Valley', 3, '2023-06-10', 'Richard Wilson', '+1 555-0192', 'Active', NOW()),
-(9, 'STD-1009', 'Ethan', 'Martinez', 'Male', '2014-02-14', 'ethan.m@example.com', '+1 555-0109', '129 West 81st Street, New York', 2, '2023-06-12', 'Carlos Martinez', '+1 555-0191', 'Active', NOW()),
-(10, 'STD-1010', 'Mia', 'Garcia', 'Female', '2015-08-05', 'mia.g@example.com', '+1 555-0110', '420 Paper Street, Wilmington', 1, '2023-06-15', 'Hector Garcia', '+1 555-0190', 'Active', NOW());
+INSERT INTO `students` (`id`, `roll_no`, `first_name`, `last_name`, `gender`, `dob`, `email`, `password`, `phone`, `address`, `class_id`, `admission_date`, `parent_name`, `parent_phone`, `status`, `created_at`) VALUES
+(1, 'STD-1001', 'Alex', 'Johnson', 'Male', '2010-04-12', 'alex.j@example.com', '$2y$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', '+1 555-0101', '742 Evergreen Terrace, Springfield', 6, '2023-06-01', 'Arthur Johnson', '+1 555-0199', 'Active', NOW()),
+(2, 'STD-1002', 'Emma', 'Watson', 'Female', '2010-09-24', 'emma.w@example.com', '$2y$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', '+1 555-0102', '124 Conch Street, Bikini Bottom', 6, '2023-06-01', 'Chris Watson', '+1 555-0198', 'Active', NOW()),
+(3, 'STD-1003', 'Liam', 'Miller', 'Male', '2011-01-15', 'liam.m@example.com', '$2y$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', '+1 555-0103', '221B Baker Street, London', 5, '2023-06-02', 'George Miller', '+1 555-0197', 'Active', NOW()),
+(4, 'STD-1004', 'Sophia', 'Davis', 'Female', '2011-06-30', 'sophia.d@example.com', '$2y$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', '+1 555-0104', '31 Spooner Street, Quahog', 5, '2023-06-02', 'Mark Davis', '+1 555-0196', 'Active', NOW()),
+(5, 'STD-1005', 'Noah', 'Brown', 'Male', '2012-03-18', 'noah.b@example.com', '$2y$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', '+1 555-0105', '4 Privet Drive, Little Whinging', 4, '2023-06-05', 'Daniel Brown', '+1 555-0195', 'Active', NOW()),
+(6, 'STD-1006', 'Olivia', 'Taylor', 'Female', '2012-07-22', 'olivia.t@example.com', '$2y$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', '+1 555-0106', '1313 Mockingbird Lane, Mockingbird Hts', 4, '2023-06-05', 'Samuel Taylor', '+1 555-0194', 'Active', NOW()),
+(7, 'STD-1007', 'Lucas', 'Anderson', 'Male', '2013-05-11', 'lucas.a@example.com', '$2y$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', '+1 555-0107', '704 Hauser Street, Queens', 3, '2023-06-10', 'Thomas Anderson', '+1 555-0193', 'Active', NOW()),
+(8, 'STD-1008', 'Ava', 'Wilson', 'Female', '2013-11-09', 'ava.w@example.com', '$2y$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', '+1 555-0108', '1640 Riverside Drive, Hill Valley', 3, '2023-06-10', 'Richard Wilson', '+1 555-0192', 'Active', NOW()),
+(9, 'STD-1009', 'Ethan', 'Martinez', 'Male', '2014-02-14', 'ethan.m@example.com', '$2y$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', '+1 555-0109', '129 West 81st Street, New York', 2, '2023-06-12', 'Carlos Martinez', '+1 555-0191', 'Active', NOW()),
+(10, 'STD-1010', 'Mia', 'Garcia', 'Female', '2015-08-05', 'mia.g@example.com', '$2y$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', '+1 555-0110', '420 Paper Street, Wilmington', 1, '2023-06-15', 'Hector Garcia', '+1 555-0190', 'Active', NOW());
 
 -- --------------------------------------------------------
 -- Table: subjects
