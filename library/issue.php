@@ -218,7 +218,7 @@ include "../includes/header.php";
                                 </td>
                                 <td style="text-align: right;">
                                     <?php if ($iss['status'] !== 'Returned'): ?>
-                                        <a href="issue.php?action=return&issue_id=<?php echo $iss['id']; ?>" class="btn btn-secondary btn-sm" style="color: #34d399;" onclick="return confirm('Confirm return of this book?');">
+                                        <a href="issue.php?action=return&issue_id=<?php echo $iss['id']; ?>" class="btn btn-secondary btn-sm" style="color: #34d399;" data-title="Confirm Book Return" data-confirm="Confirm the return and inventory restocking of <strong><?php echo htmlspecialchars($iss['book_title']); ?></strong> for student <strong><?php echo htmlspecialchars($iss['first_name'] . ' ' . $iss['last_name']); ?></strong>?">
                                             Return Book
                                         </a>
                                     <?php else: ?>

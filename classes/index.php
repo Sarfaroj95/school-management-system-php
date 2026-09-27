@@ -73,7 +73,7 @@ include "../includes/header.php";
                 <?php else: ?>
                     <?php foreach ($classes as $c): ?>
                         <tr>
-                            <td style="font-weight: 700; color: #ffffff;">
+                            <td style="font-weight: 700; color: var(--text-primary);">
                                 <?php echo htmlspecialchars($c['class_name']); ?>
                             </td>
                             <td><span class="badge badge-info">Section <?php echo htmlspecialchars($c['section']); ?></span></td>

@@ -90,5 +90,6 @@ Defined in [`includes/auth.php`](file:///c:/xampp/htdocs/school-management-syste
 - [`settings/user_edit.php`](file:///c:/xampp/htdocs/school-management-system-php/settings/user_edit.php): User edit page
 - [`settings/user_delete.php`](file:///c:/xampp/htdocs/school-management-system-php/settings/user_delete.php): User deletion handler
 - [`settings/reset_temp_pass.php`](file:///c:/xampp/htdocs/school-management-system-php/settings/reset_temp_pass.php): Temporary password reset handler
-- [`profile.php`](file:///c:/xampp/htdocs/school-management-system-php/profile.php): User profile & password management
+- [`documents/ENTITY_RELATIONSHIP_DIAGRAM.md`](file:///c:/xampp/htdocs/school-management-system-php/documents/ENTITY_RELATIONSHIP_DIAGRAM.md): Visual ER Model, Schema Cardinalities & Data Flow Pipelines
+- [`documents/BUSINESS_FLOW_AND_FUNCTIONALITY.md`](file:///c:/xampp/htdocs/school-management-system-php/documents/BUSINESS_FLOW_AND_FUNCTIONALITY.md): End-to-End Business Flow, Role Journeys & System Functionality Guide
 - [`documents/IMPLEMENTATION_PLAN.md`](file:///c:/xampp/htdocs/school-management-system-php/documents/IMPLEMENTATION_PLAN.md): Archived documentation

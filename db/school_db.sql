@@ -302,12 +302,12 @@ CREATE TABLE `system_settings` (
 
 -- Dumping data for table `system_settings`
 INSERT INTO `system_settings` (`setting_key`, `setting_value`) VALUES
-('school_name', 'EduCore Model International School'),
+('school_name', 'KRISHNAPUR PRIMARY SCHOOL'),
 ('school_email', 'contact@educore-sms.edu'),
-('school_phone', '+1 (555) 019-2834'),
+('school_phone', '+91 (555) 019-2834'),
 ('academic_year', '2026-2027'),
 ('currency_symbol', '$'),
-('school_address', '100 University Avenue, Tech Park, Suite 400')
+('school_address', 'RGGM+2V9, Krishnapur, Chandrakona, Krishnapur, West Bengal 721242')
 ON DUPLICATE KEY UPDATE `setting_value` = VALUES(`setting_value`);
 
 SET FOREIGN_KEY_CHECKS = 1;

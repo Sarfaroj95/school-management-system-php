@@ -85,7 +85,7 @@ include "../includes/header.php";
     </div>
 
     <!-- Filter & Search Toolbar -->
-    <div style="padding: 16px 24px; border-bottom: 1px solid var(--border-color); background: rgba(0,0,0,0.15);">
+    <div class="table-filter-bar">
         <form method="GET" action="index.php" style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
             <input type="text" name="search" class="search-input" placeholder="Search by name, roll, email..." value="<?php echo htmlspecialchars($search_query); ?>">
             
@@ -130,8 +130,8 @@ include "../includes/header.php";
                     <?php foreach ($students as $stu): ?>
                         <tr>
                             <td><span class="badge badge-info"><?php echo htmlspecialchars($stu['roll_no']); ?></span></td>
-                            <td style="font-weight: 600; color: #ffffff;">
-                                <a href="view.php?id=<?php echo $stu['id']; ?>" style="color: #ffffff; hover: underline;">
+                            <td style="font-weight: 600; color: var(--text-primary);">
+                                <a href="view.php?id=<?php echo $stu['id']; ?>" style="color: var(--text-primary); text-decoration: none;">
                                     <?php echo htmlspecialchars($stu['first_name'] . ' ' . $stu['last_name']); ?>
                                 </a>
                             </td>

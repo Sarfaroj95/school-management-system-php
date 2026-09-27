@@ -132,18 +132,18 @@ include "includes/header.php";
             </div>
             <div class="card-body">
                 <div style="margin-bottom: 20px;">
-                    <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 2px; color: #f8fafc;"><?php echo htmlspecialchars($user_name); ?></h2>
+                    <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 2px; color: var(--text-primary);"><?php echo htmlspecialchars($user_name); ?></h2>
                     <span style="font-size: 13px; color: var(--text-secondary);"><?php echo htmlspecialchars($email ?: 'No email registered'); ?></span>
                 </div>
 
-                <div style="background: rgba(0,0,0,0.25); border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 12px;">
+                <div style="background: var(--bg-surface-elevated); border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 12px;">
                     <div style="display: flex; justify-content: space-between; font-size: 13px;">
                         <span style="color: var(--text-muted);">Unique Identifier / Login ID</span>
                         <strong style="font-family: monospace; color: #38bdf8;"><?php echo htmlspecialchars($username ?: 'USR-' . $user_id); ?></strong>
                     </div>
                     <div style="display: flex; justify-content: space-between; font-size: 13px;">
                         <span style="color: var(--text-muted);">Assigned System Role</span>
-                        <strong style="color: #f1f5f9;"><?php echo htmlspecialchars($user_role); ?></strong>
+                        <strong style="color: var(--text-primary);"><?php echo htmlspecialchars($user_role); ?></strong>
                     </div>
                     <?php if (isset($_SESSION['emp_id'])): ?>
                         <div style="display: flex; justify-content: space-between; font-size: 13px;">
@@ -205,15 +205,15 @@ include "includes/header.php";
         <div class="card-body">
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px;">
                 <?php foreach ($my_permissions as $sec_code => $sec_info): ?>
-                    <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid <?php echo ($sec_info['access']) ? 'rgba(16, 185, 129, 0.25)' : 'rgba(255, 255, 255, 0.06)'; ?>; padding: 14px 16px; border-radius: 10px;">
+                    <div style="background: var(--bg-surface-elevated); border: 1px solid <?php echo ($sec_info['access']) ? 'rgba(16, 185, 129, 0.35)' : 'var(--border-color)'; ?>; padding: 14px 16px; border-radius: 10px;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                            <strong style="font-size: 14px; color: <?php echo ($sec_info['access']) ? '#f8fafc' : 'var(--text-muted)'; ?>">
+                            <strong style="font-size: 14px; color: <?php echo ($sec_info['access']) ? 'var(--text-primary)' : 'var(--text-muted)'; ?>">
                                 <?php echo htmlspecialchars($sec_info['name']); ?>
                             </strong>
                             <?php if ($sec_info['access']): ?>
                                 <span class="badge badge-success" style="font-size: 10px;">Enabled</span>
                             <?php else: ?>
-                                <span class="badge" style="background: rgba(255,255,255,0.05); color: var(--text-muted); font-size: 10px;">Restricted</span>
+                                <span class="badge" style="background: var(--border-color); color: var(--text-muted); font-size: 10px;">Restricted</span>
                             <?php endif; ?>
                         </div>
                         <div style="font-size: 11px; color: var(--text-secondary);">

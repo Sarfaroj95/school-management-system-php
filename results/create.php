@@ -31,17 +31,16 @@ $sub_stmt->execute();
 $subjects = $sub_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 $sub_stmt->close();
 
-// Helper function to calculate letter grade
+// Helper function to calculate letter grade based on Marks / Percentage
+// 80-100: A (Very Good), 65-79: B (Good), 50-64: C (Satisfactory), 35-49: D (Average), Below 35: E (Not Satisfactory)
 function compute_grade($obtained, $max) {
     if ($max <= 0) return 'N/A';
     $pct = ($obtained / $max) * 100;
-    if ($pct >= 90) return 'A+';
     if ($pct >= 80) return 'A';
-    if ($pct >= 70) return 'B+';
-    if ($pct >= 60) return 'B';
+    if ($pct >= 65) return 'B';
     if ($pct >= 50) return 'C';
-    if ($pct >= 40) return 'D';
-    return 'F';
+    if ($pct >= 35) return 'D';
+    return 'E';
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

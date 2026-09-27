@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // 1. Check Admins & Staff (admins table)
         // ========================================================
         if (!$authenticated && ($selected_role === 'auto' || $selected_role === 'admin' || $selected_role === 'staff')) {
-            $stmt = @$conn->prepare("SELECT id, username, password, full_name, email, role FROM admins WHERE username = ? OR email = ? LIMIT 1");
+            $stmt = @$conn->prepare("SELECT id, username, password, full_name, email, role, theme_mode FROM admins WHERE username = ? OR email = ? LIMIT 1");
             if ($stmt) {
                 $stmt->bind_param("ss", $identifier, $identifier);
                 $stmt->execute();
@@ -63,7 +63,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             'username' => $user['username'],
                             'full_name' => $user['full_name'],
                             'email' => $user['email'],
-                            'role' => $user['role'] ?? 'Admin'
+                            'role' => $user['role'] ?? 'Admin',
+                            'theme_mode' => $user['theme_mode'] ?? 'dark'
                         ];
                     }
                 }
@@ -75,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // 2. Check Teachers (teachers table)
         // ========================================================
         if (!$authenticated && ($selected_role === 'auto' || $selected_role === 'teacher')) {
-            $stmt = @$conn->prepare("SELECT id, emp_id, name, email, password, subject_specialization, status FROM teachers WHERE (emp_id = ? OR email = ?) AND status != 'Resigned' LIMIT 1");
+            $stmt = @$conn->prepare("SELECT id, emp_id, name, email, password, subject_specialization, status, theme_mode FROM teachers WHERE (emp_id = ? OR email = ?) AND status != 'Resigned' LIMIT 1");
             if ($stmt) {
                 $stmt->bind_param("ss", $identifier, $identifier);
                 $stmt->execute();
@@ -100,7 +101,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             'full_name' => $t['name'],
                             'email' => $t['email'],
                             'subject_specialization' => $t['subject_specialization'],
-                            'role' => 'Teacher'
+                            'role' => 'Teacher',
+                            'theme_mode' => $t['theme_mode'] ?? 'dark'
                         ];
                     }
                 }
@@ -112,7 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // 3. Check Students (students table)
         // ========================================================
         if (!$authenticated && ($selected_role === 'auto' || $selected_role === 'student')) {
-            $stmt = @$conn->prepare("SELECT s.id, s.roll_no, s.first_name, s.last_name, s.email, s.password, s.class_id, s.status, c.class_name, c.section 
+            $stmt = @$conn->prepare("SELECT s.id, s.roll_no, s.first_name, s.last_name, s.email, s.password, s.class_id, s.status, s.theme_mode, c.class_name, c.section 
                                     FROM students s 
                                     LEFT JOIN classes c ON s.class_id = c.id 
                                     WHERE (s.roll_no = ? OR s.email = ?) AND s.status != 'Suspended' 
@@ -142,7 +144,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             'email' => $s['email'],
                             'class_id' => $s['class_id'],
                             'class_name' => ($s['class_name'] ? $s['class_name'] . ' - ' . $s['section'] : 'Assigned Class'),
-                            'role' => 'Student'
+                            'role' => 'Student',
+                            'theme_mode' => $s['theme_mode'] ?? 'dark'
                         ];
                     }
                 }
@@ -156,7 +159,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!$authenticated) {
             $check_legacy = @mysqli_query($conn, "SHOW TABLES LIKE 'admin_login'");
             if ($check_legacy && mysqli_num_rows($check_legacy) > 0) {
-                $legacy_stmt = @$conn->prepare("SELECT id, user, pass FROM admin_login WHERE user = ? LIMIT 1");
+                $legacy_stmt = @$conn->prepare("SELECT id, user, pass, theme_mode FROM admin_login WHERE user = ? LIMIT 1");
                 if ($legacy_stmt) {
                     $legacy_stmt->bind_param("s", $identifier);
                     $legacy_stmt->execute();
@@ -169,7 +172,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 'username' => $leg_user['user'],
                                 'full_name' => 'Administrator',
                                 'email' => 'admin@schoolsms.edu',
-                                'role' => 'Super Admin'
+                                'role' => 'Super Admin',
+                                'theme_mode' => $leg_user['theme_mode'] ?? 'dark'
                             ];
                         }
                     }
@@ -185,6 +189,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['full_name'] = $user_data['full_name'] ?? 'User';
             $_SESSION['email'] = $user_data['email'] ?? '';
             $_SESSION['role'] = $user_data['role'] ?? 'Admin';
+            $_SESSION['theme_mode'] = $user_data['theme_mode'] ?? 'dark';
             
             // Set role-specific metadata
             if (isset($user_data['teacher_id'])) {

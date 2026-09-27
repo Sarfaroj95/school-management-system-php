@@ -214,11 +214,11 @@ CREATE TABLE `marks` (
 
 -- Dumping data for table `marks`
 INSERT INTO `marks` (`id`, `student_id`, `subject_id`, `exam_name`, `marks_obtained`, `max_marks`, `grade`, `remarks`, `exam_date`, `created_at`) VALUES
-(1, 1, 1, 'Midterm Exam', 94.50, 100.00, 'A+', 'Outstanding problem solving', '2024-03-15', NOW()),
+(1, 1, 1, 'Midterm Exam', 94.50, 100.00, 'A', 'Outstanding problem solving', '2024-03-15', NOW()),
 (2, 1, 2, 'Midterm Exam', 88.00, 100.00, 'A', 'Solid laboratory concepts', '2024-03-17', NOW()),
-(3, 1, 3, 'Midterm Exam', 91.00, 100.00, 'A+', 'Excellent essay structure', '2024-03-19', NOW()),
-(4, 2, 1, 'Midterm Exam', 82.50, 100.00, 'B+', 'Good effort', '2024-03-15', NOW()),
-(5, 2, 2, 'Midterm Exam', 96.00, 100.00, 'A+', 'Top score in class', '2024-03-17', NOW()),
+(3, 1, 3, 'Midterm Exam', 91.00, 100.00, 'A', 'Excellent essay structure', '2024-03-19', NOW()),
+(4, 2, 1, 'Midterm Exam', 82.50, 100.00, 'A', 'Good effort', '2024-03-15', NOW()),
+(5, 2, 2, 'Midterm Exam', 96.00, 100.00, 'A', 'Top score in class', '2024-03-17', NOW()),
 (6, 3, 4, 'Midterm Exam', 89.00, 100.00, 'A', 'Great practical programming', '2024-03-20', NOW());
 
 -- --------------------------------------------------------
@@ -307,12 +307,12 @@ CREATE TABLE `system_settings` (
 
 -- Dumping data for table `system_settings`
 INSERT INTO `system_settings` (`setting_key`, `setting_value`) VALUES
-('school_name', 'EduCore Model International School'),
+('school_name', 'KRISHNAPUR PRIMARY SCHOOL'),
 ('school_email', 'contact@educore-sms.edu'),
-('school_phone', '+1 (555) 019-2834'),
+('school_phone', '+91 (555) 019-2834'),
 ('academic_year', '2026-2027'),
 ('currency_symbol', '$'),
-('school_address', '100 University Avenue, Tech Park, Suite 400')
+('school_address', 'RGGM+2V9, Krishnapur, Chandrakona, Krishnapur, West Bengal 721242')
 ON DUPLICATE KEY UPDATE `setting_value` = VALUES(`setting_value`);
 
 SET FOREIGN_KEY_CHECKS = 1;

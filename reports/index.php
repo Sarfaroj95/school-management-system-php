@@ -65,12 +65,12 @@ include "../includes/header.php";
                         $occ = ($ce['capacity'] > 0) ? round(($ce['enrolled'] / $ce['capacity']) * 100) : 0;
                     ?>
                         <tr>
-                            <td style="font-weight: 600; color: #ffffff;"><?php echo htmlspecialchars($ce['class_name'] . ' - ' . $ce['section']); ?></td>
+                            <td style="font-weight: 600; color: var(--text-primary);"><?php echo htmlspecialchars($ce['class_name'] . ' - ' . $ce['section']); ?></td>
                             <td><?php echo $ce['enrolled']; ?></td>
                             <td><?php echo $ce['capacity']; ?></td>
                             <td>
                                 <div style="display: flex; align-items: center; gap: 8px;">
-                                    <div style="flex: 1; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; max-width: 80px;">
+                                    <div style="flex: 1; height: 6px; background: var(--border-color); border-radius: 3px; overflow: hidden; max-width: 80px;">
                                         <div style="width: <?php echo min($occ, 100); ?>%; height: 100%; background: <?php echo ($occ > 90) ? '#f87171' : '#6366f1'; ?>;"></div>
                                     </div>
                                     <span style="font-size: 12px;"><?php echo $occ; ?>%</span>
@@ -93,10 +93,10 @@ include "../includes/header.php";
                 <?php foreach ($gender_data as $g): ?>
                     <div>
                         <div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 14px;">
-                            <span style="font-weight: 600; color: #ffffff;"><?php echo htmlspecialchars($g['gender']); ?></span>
+                            <span style="font-weight: 600; color: var(--text-primary);"><?php echo htmlspecialchars($g['gender']); ?></span>
                             <span style="color: #38bdf8; font-weight: 700;"><?php echo $g['count']; ?> Students</span>
                         </div>
-                        <div style="height: 10px; background: rgba(255,255,255,0.08); border-radius: 5px; overflow: hidden;">
+                        <div style="height: 10px; background: var(--border-color); border-radius: 5px; overflow: hidden;">
                             <div style="width: <?php echo rand(35, 65); ?>%; height: 100%; background: var(--primary-gradient);"></div>
                         </div>
                     </div>
@@ -115,8 +115,8 @@ include "../includes/header.php";
         <div class="card-body">
             <div style="display: flex; flex-wrap: wrap; gap: 10px;">
                 <?php foreach ($dept_data as $d): ?>
-                    <div style="background: rgba(255,255,255,0.04); border: 1px solid var(--border-color); padding: 12px 18px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: space-between; flex: 1 1 200px;">
-                        <span style="font-size: 13px; font-weight: 600; color: #ffffff;"><?php echo htmlspecialchars($d['subject_specialization']); ?></span>
+                    <div style="background: var(--bg-surface-elevated); border: 1px solid var(--border-color); padding: 12px 18px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: space-between; flex: 1 1 200px;">
+                        <span style="font-size: 13px; font-weight: 600; color: var(--text-primary);"><?php echo htmlspecialchars($d['subject_specialization']); ?></span>
                         <span class="badge badge-info"><?php echo $d['count']; ?> Teachers</span>
                     </div>
                 <?php endforeach; ?>
@@ -132,7 +132,7 @@ include "../includes/header.php";
         <div class="card-body">
             <div style="display: flex; gap: 12px; justify-content: space-around; text-align: center;">
                 <?php foreach ($grade_data as $gr): ?>
-                    <div style="background: rgba(0,0,0,0.25); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 16px 20px; min-width: 70px;">
+                    <div style="background: var(--bg-surface-elevated); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 16px 20px; min-width: 70px;">
                         <div style="font-size: 20px; font-weight: 800; color: #a855f7;"><?php echo htmlspecialchars($gr['grade']); ?></div>
                         <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;"><?php echo $gr['count']; ?> Marks</div>
                     </div>

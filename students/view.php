@@ -75,7 +75,7 @@ include "../includes/header.php";
             <a href="edit.php?id=<?php echo $student['id']; ?>" class="btn btn-primary btn-sm">Edit Profile</a>
         <?php endif; ?>
         <?php if (can_delete()): ?>
-            <a href="delete.php?id=<?php echo $student['id']; ?>" class="btn btn-danger btn-sm btn-delete-confirm" data-name="<?php echo htmlspecialchars($student['first_name']); ?>">Delete</a>
+            <a href="delete.php?id=<?php echo $student['id']; ?>" class="btn btn-danger btn-sm btn-delete-confirm" data-name="Student <?php echo htmlspecialchars($student['first_name'] . ' ' . $student['last_name'] . ' (' . $student['roll_no'] . ')'); ?>">Delete</a>
         <?php endif; ?>
     </div>
 </div>
@@ -87,7 +87,7 @@ include "../includes/header.php";
             <div style="width: 80px; height: 80px; border-radius: 50%; background: var(--primary-gradient); display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 800; color: #fff; margin: 0 auto 16px auto; box-shadow: var(--shadow-glow);">
                 <?php echo strtoupper(substr($student['first_name'], 0, 1)); ?>
             </div>
-            <h2 style="font-size: 20px; font-weight: 700; color: #ffffff;"><?php echo htmlspecialchars($student['first_name'] . ' ' . $student['last_name']); ?></h2>
+            <h2 style="font-size: 20px; font-weight: 700; color: var(--text-primary);"><?php echo htmlspecialchars($student['first_name'] . ' ' . $student['last_name']); ?></h2>
             <p style="color: #38bdf8; font-weight: 600; font-size: 14px; margin-top: 4px;"><?php echo htmlspecialchars($student['roll_no']); ?></p>
             <div style="margin-top: 10px;">
                 <span class="badge badge-success"><?php echo htmlspecialchars($student['status']); ?></span>
@@ -97,35 +97,35 @@ include "../includes/header.php";
         <div style="padding: 0 24px 24px 24px; font-size: 13px;">
             <div style="border-top: 1px solid var(--border-color); padding: 12px 0; display: flex; justify-content: space-between;">
                 <span style="color: var(--text-muted);">Class / Section:</span>
-                <span style="font-weight: 600; color: #f1f5f9;"><?php echo htmlspecialchars(($student['class_name'] ?? 'N/A') . ' - ' . ($student['section'] ?? '')); ?></span>
+                <span style="font-weight: 600; color: var(--text-primary);"><?php echo htmlspecialchars(($student['class_name'] ?? 'N/A') . ' - ' . ($student['section'] ?? '')); ?></span>
             </div>
             <div style="border-top: 1px solid var(--border-color); padding: 12px 0; display: flex; justify-content: space-between;">
                 <span style="color: var(--text-muted);">Class Teacher:</span>
-                <span style="font-weight: 600; color: #f1f5f9;"><?php echo htmlspecialchars($student['teacher_name'] ?? 'Unassigned'); ?></span>
+                <span style="font-weight: 600; color: var(--text-primary);"><?php echo htmlspecialchars($student['teacher_name'] ?? 'Unassigned'); ?></span>
             </div>
             <div style="border-top: 1px solid var(--border-color); padding: 12px 0; display: flex; justify-content: space-between;">
                 <span style="color: var(--text-muted);">Date of Birth:</span>
-                <span style="font-weight: 600; color: #f1f5f9;"><?php echo date('M d, Y', strtotime($student['dob'])); ?></span>
+                <span style="font-weight: 600; color: var(--text-primary);"><?php echo date('M d, Y', strtotime($student['dob'])); ?></span>
             </div>
             <div style="border-top: 1px solid var(--border-color); padding: 12px 0; display: flex; justify-content: space-between;">
                 <span style="color: var(--text-muted);">Gender:</span>
-                <span style="font-weight: 600; color: #f1f5f9;"><?php echo htmlspecialchars($student['gender']); ?></span>
+                <span style="font-weight: 600; color: var(--text-primary);"><?php echo htmlspecialchars($student['gender']); ?></span>
             </div>
             <div style="border-top: 1px solid var(--border-color); padding: 12px 0; display: flex; justify-content: space-between;">
                 <span style="color: var(--text-muted);">Admission Date:</span>
-                <span style="font-weight: 600; color: #f1f5f9;"><?php echo date('M d, Y', strtotime($student['admission_date'])); ?></span>
+                <span style="font-weight: 600; color: var(--text-primary);"><?php echo date('M d, Y', strtotime($student['admission_date'])); ?></span>
             </div>
             <div style="border-top: 1px solid var(--border-color); padding: 12px 0; display: flex; justify-content: space-between;">
                 <span style="color: var(--text-muted);">Parent / Guardian:</span>
-                <span style="font-weight: 600; color: #f1f5f9;"><?php echo htmlspecialchars($student['parent_name']); ?></span>
+                <span style="font-weight: 600; color: var(--text-primary);"><?php echo htmlspecialchars($student['parent_name']); ?></span>
             </div>
             <div style="border-top: 1px solid var(--border-color); padding: 12px 0; display: flex; justify-content: space-between;">
                 <span style="color: var(--text-muted);">Parent Phone:</span>
-                <span style="font-weight: 600; color: #f1f5f9;"><?php echo htmlspecialchars($student['parent_phone']); ?></span>
+                <span style="font-weight: 600; color: var(--text-primary);"><?php echo htmlspecialchars($student['parent_phone']); ?></span>
             </div>
             <div style="border-top: 1px solid var(--border-color); padding: 12px 0; display: flex; justify-content: space-between;">
                 <span style="color: var(--text-muted);">Address:</span>
-                <span style="font-weight: 600; color: #f1f5f9; max-width: 180px; text-align: right;"><?php echo htmlspecialchars($student['address']); ?></span>
+                <span style="font-weight: 600; color: var(--text-primary); max-width: 180px; text-align: right;"><?php echo htmlspecialchars($student['address']); ?></span>
             </div>
         </div>
     </div>
@@ -141,7 +141,17 @@ include "../includes/header.php";
                     </svg>
                     Academic Performance & Exam Marks
                 </div>
-                <a href="../results/create.php" class="btn btn-secondary btn-sm">+ Record Marks</a>
+                <div style="display: flex; gap: 8px;">
+                    <a href="../results/print.php?student_id=<?php echo $student['id']; ?>" target="_blank" class="btn btn-secondary btn-sm" title="Print Academic Marksheet Transcript">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="14" height="14" style="vertical-align: -2px; margin-right: 4px;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                        </svg>
+                        Print Marksheet
+                    </a>
+                    <?php if (can_manage_results()): ?>
+                        <a href="../results/create.php" class="btn btn-secondary btn-sm">+ Record Marks</a>
+                    <?php endif; ?>
+                </div>
             </div>
             <div class="table-responsive">
                 <table class="data-table">
@@ -155,14 +165,14 @@ include "../includes/header.php";
                         </tr>
                     </thead>
                     <tbody>
-                        <?php if (empty($student_marks)): ?>
+                        <?php if (empty($exam_marks)): ?>
                             <tr>
                                 <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 24px;">No exam marks recorded yet.</td>
                             </tr>
                         <?php else: ?>
-                            <?php foreach ($student_marks as $mark): ?>
+                            <?php foreach ($exam_marks as $mark): ?>
                                 <tr>
-                                    <td style="font-weight: 600; color: #ffffff;"><?php echo htmlspecialchars($mark['subject_name']); ?></td>
+                                    <td style="font-weight: 600; color: var(--text-primary);"><?php echo htmlspecialchars($mark['subject_name']); ?></td>
                                     <td><?php echo htmlspecialchars($mark['exam_name']); ?></td>
                                     <td><strong><?php echo $mark['marks_obtained']; ?></strong> / <?php echo $mark['max_marks']; ?></td>
                                     <td><span class="badge badge-purple"><?php echo htmlspecialchars($mark['grade']); ?></span></td>

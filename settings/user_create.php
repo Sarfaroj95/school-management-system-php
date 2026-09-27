@@ -175,11 +175,11 @@ include $root_path . "includes/header.php";
                     Please securely provide these login credentials to <strong><?php echo htmlspecialchars($created_user['name']); ?></strong>. They can sign in on the main portal and update their password.
                 </p>
 
-                <div style="background: #0b0f19; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 20px; margin-bottom: 18px;">
+                <div style="background: var(--bg-surface-elevated); border: 1px solid var(--border-color); border-radius: 10px; padding: 20px; margin-bottom: 18px;">
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
                         <div>
                             <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Role Assigned</div>
-                            <div style="font-size: 15px; font-weight: 700; color: #f8fafc; margin-top: 2px;">
+                            <div style="font-size: 15px; font-weight: 700; color: var(--text-primary); margin-top: 2px;">
                                 <?php echo htmlspecialchars($created_user['role']); ?>
                             </div>
                         </div>

@@ -110,11 +110,11 @@ include $root_path . "includes/header.php";
         </div>
 
         <div class="card-body" style="padding: 28px;">
-            <div style="background: #0b0f19; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+            <div style="background: var(--bg-surface-elevated); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; margin-bottom: 24px;">
                 <div style="display: flex; flex-direction: column; gap: 14px;">
                     <div>
                         <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Account Holder & Role</div>
-                        <div style="font-size: 15px; font-weight: 700; color: #f8fafc; margin-top: 2px;">
+                        <div style="font-size: 15px; font-weight: 700; color: var(--text-primary); margin-top: 2px;">
                             <?php echo htmlspecialchars($user_name); ?> · <span style="color: #38bdf8;"><?php echo htmlspecialchars($user_role); ?></span>
                         </div>
                     </div>

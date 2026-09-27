@@ -130,3 +130,15 @@ define('DB_PORT', 3306);
 ```
 
 All PHP files utilize the central `$conn` variable. No separate connections are created anywhere in the project.
+
+---
+
+## 📚 Complete Feature & Business Flow Documentation
+
+* [**Entity-Relationship (ER) Diagram & Data Flow Architecture**](documents/ENTITY_RELATIONSHIP_DIAGRAM.md): Visual ER model, table schema, cardinalities, and foreign keys.
+* [**Business Flow & System Functionality Guide**](documents/BUSINESS_FLOW_AND_FUNCTIONALITY.md): End-to-end user journeys, role matrix, and business lifecycle diagrams.
+* [**Examination & Result Print Feature Guide**](documents/EXAM_RESULT_PRINT_FEATURE.md): Detailed 5-tier grading system, individual grade card, and class final rank print specification.
+* [**School Details & System Configuration Guide**](documents/SCHOOL_DETAILS_FEATURE.md): Dynamic branding, address, academic session, and currency configuration.
+* [**Attendance System Architecture**](documents/ATTENDANCE_FEATURE.md): Roll call registers, monthly summary matrix, and attendance health metrics.
+* [**Full Implementation Plan**](documents/IMPLEMENTATION_PLAN.md): Security, RBAC middleware, and directory hierarchy.
+

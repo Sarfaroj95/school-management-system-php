@@ -294,6 +294,33 @@ function ensure_tables_exist($conn) {
         @mysqli_query($conn, "ALTER TABLE `students` ADD COLUMN `password` VARCHAR(255) NOT NULL DEFAULT '$2y$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW' AFTER `email`");
     }
 
+    // Auto-migrate schema: Check if theme_mode column exists in admins table
+    $check_admin_theme = @mysqli_query($conn, "SHOW COLUMNS FROM `admins` LIKE 'theme_mode'");
+    if ($check_admin_theme && mysqli_num_rows($check_admin_theme) === 0) {
+        @mysqli_query($conn, "ALTER TABLE `admins` ADD COLUMN `theme_mode` VARCHAR(10) NOT NULL DEFAULT 'dark'");
+    }
+
+    // Auto-migrate schema: Check if theme_mode column exists in teachers table
+    $check_teacher_theme = @mysqli_query($conn, "SHOW COLUMNS FROM `teachers` LIKE 'theme_mode'");
+    if ($check_teacher_theme && mysqli_num_rows($check_teacher_theme) === 0) {
+        @mysqli_query($conn, "ALTER TABLE `teachers` ADD COLUMN `theme_mode` VARCHAR(10) NOT NULL DEFAULT 'dark'");
+    }
+
+    // Auto-migrate schema: Check if theme_mode column exists in students table
+    $check_student_theme = @mysqli_query($conn, "SHOW COLUMNS FROM `students` LIKE 'theme_mode'");
+    if ($check_student_theme && mysqli_num_rows($check_student_theme) === 0) {
+        @mysqli_query($conn, "ALTER TABLE `students` ADD COLUMN `theme_mode` VARCHAR(10) NOT NULL DEFAULT 'dark'");
+    }
+
+    // Auto-migrate schema: Check if theme_mode column exists in legacy admin_login table
+    $check_legacy_tab = @mysqli_query($conn, "SHOW TABLES LIKE 'admin_login'");
+    if ($check_legacy_tab && mysqli_num_rows($check_legacy_tab) > 0) {
+        $check_legacy_theme = @mysqli_query($conn, "SHOW COLUMNS FROM `admin_login` LIKE 'theme_mode'");
+        if ($check_legacy_theme && mysqli_num_rows($check_legacy_theme) === 0) {
+            @mysqli_query($conn, "ALTER TABLE `admin_login` ADD COLUMN `theme_mode` VARCHAR(10) NOT NULL DEFAULT 'dark'");
+        }
+    }
+
     // Auto-migrate schema: Ensure system_settings table exists
     @mysqli_query($conn, "CREATE TABLE IF NOT EXISTS `system_settings` (
         `id` INT(11) NOT NULL AUTO_INCREMENT,
@@ -305,10 +332,10 @@ function ensure_tables_exist($conn) {
 
     // Insert default system settings if not already present
     @mysqli_query($conn, "INSERT IGNORE INTO `system_settings` (`setting_key`, `setting_value`) VALUES 
-        ('school_name', 'EduCore Model International School'),
+        ('school_name', 'KRISHNAPUR PRIMARY SCHOOL'),
         ('school_email', 'contact@educore-sms.edu'),
-        ('school_phone', '+1 (555) 019-2834'),
-        ('school_address', '100 University Avenue, Tech Park, Suite 400'),
+        ('school_phone', '+91 (555) 019-2834'),
+        ('school_address', 'RGGM+2V9, Krishnapur, Chandrakona, Krishnapur, West Bengal 721242'),
         ('academic_year', '2026-2027'),
         ('currency_symbol', '$'),
         ('allow_student_registration', '0'),

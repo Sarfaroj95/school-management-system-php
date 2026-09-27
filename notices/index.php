@@ -56,7 +56,7 @@ include "../includes/header.php";
     </div>
 
     <!-- Audience Filter -->
-    <div style="padding: 16px 24px; border-bottom: 1px solid var(--border-color); background: rgba(0,0,0,0.15);">
+    <div class="table-filter-bar">
         <form method="GET" action="index.php" style="display: flex; gap: 12px; align-items: center;">
             <label class="form-label" style="margin:0;">Target Audience:</label>
             <select name="audience" class="form-control" style="width: auto;" onchange="this.form.submit()">

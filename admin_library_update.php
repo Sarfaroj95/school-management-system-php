@@ -299,7 +299,7 @@ $s=$_POST['sb'];
 $qer=mysqli_query($conn,"update library_details set sname='$nm', class='$pa',roll='$rol',bookname='$bok',authorname='$au',withdroldate='$w',submisiondate='$s' where id='$a'");
 if($qer)
 {
-echo "<script>confirm('update success'); window.location.href='admin_library_show.php';</script>";
+echo "<script>window.location.href='admin_library_show.php';</script>";
 }
 
 }

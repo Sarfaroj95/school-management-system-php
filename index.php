@@ -489,10 +489,10 @@ include "includes/header.php";
     </div>
 
     <!-- Quick Actions Banner -->
-    <div class="card" style="background: linear-gradient(135deg, rgba(79, 70, 229, 0.15) 0%, rgba(6, 182, 212, 0.08) 100%); border-color: rgba(79, 70, 229, 0.25);">
+    <div class="card quick-actions-banner">
         <div class="card-body" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
             <div>
-                <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 4px;">Quick Management Shortcuts</h3>
+                <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 4px; color: var(--text-primary);">Quick Management Shortcuts</h3>
                 <p style="font-size: 13px; color: var(--text-secondary);">Direct access to key administrative actions across the school portal</p>
             </div>
             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
@@ -552,7 +552,7 @@ include "includes/header.php";
                             <?php foreach ($recent_students as $stu): ?>
                                 <tr>
                                     <td><span class="badge badge-info"><?php echo htmlspecialchars($stu['roll_no']); ?></span></td>
-                                    <td style="font-weight: 600; color: #ffffff;">
+                                    <td style="font-weight: 600; color: var(--text-primary);">
                                         <?php echo htmlspecialchars($stu['first_name'] . ' ' . $stu['last_name']); ?>
                                     </td>
                                     <td><?php echo htmlspecialchars(($stu['class_name'] ?? 'N/A') . ' - ' . ($stu['section'] ?? '')); ?></td>

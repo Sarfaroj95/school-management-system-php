@@ -130,7 +130,7 @@ if (has_role('Student')) {
                     <?php else: ?>
                         <?php foreach ($logs as $log): ?>
                             <tr>
-                                <td style="font-weight: 600; color: #fff;">
+                                <td style="font-weight: 600; color: var(--text-primary);">
                                     <?php echo date('D, M d, Y', strtotime($log['attendance_date'])); ?>
                                 </td>
                                 <td><?php echo htmlspecialchars($log['class_name'] . ' - ' . $log['section']); ?></td>
@@ -932,47 +932,18 @@ $selected_class_sec = $selected_class_obj ? ('Section ' . $selected_class_obj['s
     <!-- Custom Class & Calendar Filter Bar -->
     <div class="attendance-filter-bar">
         <form method="GET" action="index.php" id="attendanceFilterForm" style="padding: 0px 24px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; width: 100%; justify-content: space-between;">
-            <input type="hidden" name="class_id" id="hiddenClassId" value="<?php echo $selected_class_id; ?>">
             <input type="hidden" name="date" id="hiddenDate" value="<?php echo htmlspecialchars($selected_date); ?>">
 
             <div class="attendance-filters">
-                <!-- 1. CUSTOM CLASS DROPDOWN -->
-                <div class="custom-att-dropdown" id="classDropdown">
-                    <button type="button" class="custom-dropdown-btn" id="classDropdownBtn" onclick="toggleClassDropdown(event)">
-                        <span class="custom-dropdown-icon">
-                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="14" height="14">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                            </svg>
-                        </span>
-                        <span class="class-title"><?php echo htmlspecialchars($selected_class_title); ?></span>
-                        <span class="section-pill"><?php echo htmlspecialchars($selected_class_sec); ?></span>
-                        <svg class="custom-dropdown-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="14" height="14">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                        </svg>
-                    </button>
-                    
-                    <div class="custom-dropdown-menu" id="classDropdownMenu" onclick="event.stopPropagation()">
-                        <div class="custom-dropdown-header">
-                            <span>Select Class / Section</span>
-                            <span class="count-pill"><?php echo count($classes); ?> Classes</span>
-                        </div>
-                        <div class="custom-dropdown-list">
-                            <?php foreach ($classes as $c): 
-                                $is_active = ($selected_class_id == $c['id']);
-                            ?>
-                                <div class="custom-dropdown-item <?php echo $is_active ? 'selected' : ''; ?>" onclick="selectClassOption('<?php echo $c['id']; ?>')">
-                                    <div class="item-main">
-                                        <span class="item-icon">🏫</span>
-                                        <span class="item-name"><?php echo htmlspecialchars($c['class_name']); ?></span>
-                                        <span class="item-sec">Sec <?php echo htmlspecialchars($c['section']); ?></span>
-                                    </div>
-                                    <?php if ($is_active): ?>
-                                        <span class="item-check">✓</span>
-                                    <?php endif; ?>
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-                    </div>
+                <!-- 1. ATTENDANCE GRADE / CLASS DROPDOWN -->
+                <div style="min-width: 210px; max-width: 270px;">
+                    <select name="class_id" id="attendanceClassSelect" onchange="document.getElementById('attendanceFilterForm').submit()" style="width: 100%;">
+                        <?php foreach ($classes as $c): ?>
+                            <option value="<?php echo $c['id']; ?>" <?php echo ($selected_class_id == $c['id']) ? 'selected' : ''; ?>>
+                                <?php echo htmlspecialchars($c['class_name'] . ' - Section ' . $c['section']); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
 
                 <!-- 2. CUSTOM CALENDAR DATE PICKER -->
@@ -1082,7 +1053,7 @@ $selected_class_sec = $selected_class_obj ? ('Section ' . $selected_class_obj['s
                                         <?php echo htmlspecialchars($stu['roll_no']); ?>
                                     </span>
                                 </td>
-                                <td style="font-weight: 600; color: #ffffff;">
+                                <td style="font-weight: 600; color: var(--text-primary);">
                                     <?php echo htmlspecialchars($stu['first_name'] . ' ' . $stu['last_name']); ?>
                                 </td>
                                 <td style="color: var(--text-secondary); font-size: 13px;">
@@ -1114,7 +1085,7 @@ $selected_class_sec = $selected_class_obj ? ('Section ' . $selected_class_obj['s
                                     </div>
                                 </td>
                                 <td>
-                                    <input type="text" name="remarks[<?php echo $stu['id']; ?>]" class="form-control" style="padding: 6px 10px; font-size: 12.5px; background: rgba(15, 23, 42, 0.6);" placeholder="Optional notes" value="<?php echo htmlspecialchars($stu['current_remarks'] ?? ''); ?>">
+                                    <input type="text" name="remarks[<?php echo $stu['id']; ?>]" class="form-control" style="padding: 6px 10px; font-size: 12.5px;" placeholder="Optional notes" value="<?php echo htmlspecialchars($stu['current_remarks'] ?? ''); ?>">
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -1124,7 +1095,7 @@ $selected_class_sec = $selected_class_obj ? ('Section ' . $selected_class_obj['s
         </div>
 
         <?php if (!empty($students) && can_manage_attendance()): ?>
-            <div style="padding: 10px 24px 0px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: rgba(15, 23, 42, 0.4); flex-wrap: wrap; gap: 12px;">
+            <div style="padding: 14px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: var(--bg-surface-elevated); flex-wrap: wrap; gap: 12px;">
                 <div style="font-size: 13px; color: var(--text-secondary);">
                     Class: <strong><?php echo htmlspecialchars($classes[array_search($selected_class_id, array_column($classes, 'id'))]['class_name'] ?? ''); ?></strong> · Date: <strong><?php echo date('D, M d, Y', strtotime($selected_date)); ?></strong>
                 </div>
@@ -1137,27 +1108,7 @@ $selected_class_sec = $selected_class_obj ? ('Section ' . $selected_class_obj['s
 </div>
 
 <script>
-// Custom Dropdown and Calendar Handlers for Attendance Page Only
-function toggleClassDropdown(e) {
-    e.stopPropagation();
-    var btn = document.getElementById('classDropdownBtn');
-    var menu = document.getElementById('classDropdownMenu');
-    var isOpen = menu.classList.contains('show');
-    
-    closeAllPopovers();
-    
-    if (!isOpen) {
-        menu.classList.add('show');
-        btn.classList.add('open');
-    }
-}
-
-function selectClassOption(classId) {
-    document.getElementById('hiddenClassId').value = classId;
-    document.getElementById('attendanceFilterForm').submit();
-}
-
-// Calendar Logic
+// Attendance Custom Calendar Popover Logic
 var activeSelectedDate = "<?php echo $selected_date; ?>";
 var calDateObj = new Date(activeSelectedDate + 'T00:00:00');
 var calViewYear = calDateObj.getFullYear();
@@ -1269,11 +1220,6 @@ function selectDateQuick(dateStr) {
 }
 
 function closeAllPopovers() {
-    var classMenu = document.getElementById('classDropdownMenu');
-    var classBtn = document.getElementById('classDropdownBtn');
-    if (classMenu) classMenu.classList.remove('show');
-    if (classBtn) classBtn.classList.remove('open');
-    
     var calPopover = document.getElementById('calendarPopover');
     var calBtn = document.getElementById('calendarPickerBtn');
     if (calPopover) calPopover.classList.remove('show');

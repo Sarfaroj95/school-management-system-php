@@ -121,7 +121,7 @@ include "../includes/header.php";
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Monthly Salary ($)</label>
+                    <label class="form-label">Monthly Salary (₹)</label>
                     <input type="number" step="0.01" name="salary" class="form-control" value="<?php echo htmlspecialchars($_POST['salary'] ?? $teacher['salary']); ?>">
                 </div>
 

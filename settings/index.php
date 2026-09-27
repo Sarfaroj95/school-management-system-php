@@ -263,14 +263,14 @@ include $root_path . "includes/header.php";
                                             </span>
                                         <?php else: ?>
                                             <div style="display: inline-flex; gap: 6px;">
-                                                <a href="reset_temp_pass.php?type=admin&id=<?php echo $adm['id']; ?>" class="btn btn-secondary btn-sm" title="Generate Temporary Password" onclick="return confirm('Generate and display a new temporary password for user <?php echo addslashes($adm['username']); ?>?');">
+                                                <a href="reset_temp_pass.php?type=admin&id=<?php echo $adm['id']; ?>" class="btn btn-secondary btn-sm" title="Generate Temporary Password" data-title="Generate Temporary Password" data-confirm="Generate and display a new temporary password for user <strong><?php echo htmlspecialchars($adm['username']); ?></strong>?">
                                                     🔑 Temp Pass
                                                 </a>
                                                 <a href="user_edit.php?type=admin&id=<?php echo $adm['id']; ?>" class="btn btn-secondary btn-sm">
                                                     ✏️ Edit
                                                 </a>
                                                 <?php if (!$is_own_account): ?>
-                                                    <a href="user_delete.php?type=admin&id=<?php echo $adm['id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete user <?php echo addslashes($adm['username']); ?>?');">
+                                                    <a href="user_delete.php?type=admin&id=<?php echo $adm['id']; ?>" class="btn btn-danger btn-sm btn-delete-confirm" data-name="Admin User: <?php echo htmlspecialchars($adm['username']); ?>" title="Delete User">
                                                         🗑️
                                                     </a>
                                                 <?php endif; ?>
@@ -321,13 +321,13 @@ include $root_path . "includes/header.php";
                                     </td>
                                     <td style="text-align: right;">
                                         <div style="display: inline-flex; gap: 6px;">
-                                            <a href="reset_temp_pass.php?type=teacher&id=<?php echo $t['id']; ?>" class="btn btn-secondary btn-sm" title="Generate Temporary Password" onclick="return confirm('Generate a new temporary password for <?php echo addslashes($t['name']); ?>?');">
+                                            <a href="reset_temp_pass.php?type=teacher&id=<?php echo $t['id']; ?>" class="btn btn-secondary btn-sm" title="Generate Temporary Password" data-title="Generate Temporary Password" data-confirm="Generate a new temporary password for faculty member <strong><?php echo htmlspecialchars($t['name']); ?></strong>?">
                                                 🔑 Temp Pass
                                             </a>
                                             <a href="user_edit.php?type=teacher&id=<?php echo $t['id']; ?>" class="btn btn-secondary btn-sm">
                                                 ✏️ Edit
                                             </a>
-                                            <a href="user_delete.php?type=teacher&id=<?php echo $t['id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete teacher <?php echo addslashes($t['name']); ?>?');">
+                                            <a href="user_delete.php?type=teacher&id=<?php echo $t['id']; ?>" class="btn btn-danger btn-sm btn-delete-confirm" data-name="Teacher: <?php echo htmlspecialchars($t['name']); ?>" title="Delete Faculty Member">
                                                 🗑️
                                             </a>
                                         </div>
@@ -376,13 +376,13 @@ include $root_path . "includes/header.php";
                                     </td>
                                     <td style="text-align: right;">
                                         <div style="display: inline-flex; gap: 6px;">
-                                            <a href="reset_temp_pass.php?type=student&id=<?php echo $stu['id']; ?>" class="btn btn-secondary btn-sm" title="Generate Temporary Password" onclick="return confirm('Generate temporary password for student <?php echo addslashes($stu['first_name']); ?>?');">
+                                            <a href="reset_temp_pass.php?type=student&id=<?php echo $stu['id']; ?>" class="btn btn-secondary btn-sm" title="Generate Temporary Password" data-title="Generate Temporary Password" data-confirm="Generate a new temporary password for student <strong><?php echo htmlspecialchars($stu['first_name'] . ' ' . $stu['last_name']); ?></strong>?">
                                                 🔑 Temp Pass
                                             </a>
                                             <a href="user_edit.php?type=student&id=<?php echo $stu['id']; ?>" class="btn btn-secondary btn-sm">
                                                 ✏️ Edit
                                             </a>
-                                            <a href="user_delete.php?type=student&id=<?php echo $stu['id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete student <?php echo addslashes($stu['first_name']); ?>?');">
+                                            <a href="user_delete.php?type=student&id=<?php echo $stu['id']; ?>" class="btn btn-danger btn-sm btn-delete-confirm" data-name="Student: <?php echo htmlspecialchars($stu['first_name'] . ' ' . $stu['last_name']); ?>" title="Delete Student Account">
                                                 🗑️
                                             </a>
                                         </div>
@@ -462,11 +462,21 @@ include $root_path . "includes/header.php";
         <!-- TAB 5: GENERAL SYSTEM SETTINGS -->
         <!-- ======================================================== -->
         <?php elseif ($active_tab === 'system'): ?>
+            <div style="background: rgba(79, 70, 229, 0.1); border: 1px solid rgba(79, 70, 229, 0.25); border-radius: 8px; padding: 14px 18px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                <div>
+                    <div style="font-weight: 700; color: var(--text-primary); font-size: 14px;">🏛️ Dedicated School Profile & Accreditation Section</div>
+                    <div style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">Manage full institutional identity, affiliation codes, principal name, board details, and campus address.</div>
+                </div>
+                <a href="school_details.php" class="btn btn-primary btn-sm" style="display: inline-flex; align-items: center; gap: 6px;">
+                    Open School Details &rarr;
+                </a>
+            </div>
+
             <form method="POST" action="index.php?tab=system">
                 <div class="form-grid">
                     <div class="form-group col-span-2">
                         <label class="form-label" for="school_name">Institution / School Name <span class="required">*</span></label>
-                        <input type="text" id="school_name" name="school_name" class="form-control" value="<?php echo htmlspecialchars($settings_map['school_name'] ?? 'EduCore Model International School'); ?>" required>
+                        <input type="text" id="school_name" name="school_name" class="form-control" value="<?php echo htmlspecialchars($settings_map['school_name'] ?? 'KRISHNAPUR PRIMARY SCHOOL'); ?>" required>
                     </div>
 
                     <div class="form-group">
@@ -476,7 +486,7 @@ include $root_path . "includes/header.php";
 
                     <div class="form-group">
                         <label class="form-label" for="school_phone">Contact Phone Number</label>
-                        <input type="text" id="school_phone" name="school_phone" class="form-control" value="<?php echo htmlspecialchars($settings_map['school_phone'] ?? '+1 (555) 019-2834'); ?>">
+                        <input type="text" id="school_phone" name="school_phone" class="form-control" value="<?php echo htmlspecialchars($settings_map['school_phone'] ?? '+91 (555) 019-2834'); ?>">
                     </div>
 
                     <div class="form-group">
@@ -491,7 +501,7 @@ include $root_path . "includes/header.php";
 
                     <div class="form-group col-span-full">
                         <label class="form-label" for="school_address">Campus Physical Address</label>
-                        <textarea id="school_address" name="school_address" class="form-control" rows="3"><?php echo htmlspecialchars($settings_map['school_address'] ?? '100 University Avenue, Tech Park, Suite 400'); ?></textarea>
+                        <textarea id="school_address" name="school_address" class="form-control" rows="3"><?php echo htmlspecialchars($settings_map['school_address'] ?? 'RGGM+2V9, Krishnapur, Chandrakona, Krishnapur, West Bengal 721242'); ?></textarea>
                     </div>
                 </div>
 
