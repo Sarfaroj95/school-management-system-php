@@ -27,6 +27,16 @@ if (!function_exists('get_user_role')) {
     }
 }
 
+if (!function_exists('is_super_admin')) {
+    /**
+     * Check if current user has the Super Admin role
+     * @return bool
+     */
+    function is_super_admin() {
+        return has_role('Super Admin');
+    }
+}
+
 if (!function_exists('has_role')) {
     /**
      * Check if current user has any of the specified roles

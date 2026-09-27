@@ -241,19 +241,41 @@ include $root_path . "includes/header.php";
                                     </td>
                                     <td style="font-size: 12px; color: var(--text-muted);"><?php echo date('M d, Y', strtotime($adm['created_at'] ?? 'now')); ?></td>
                                     <td style="text-align: right;">
-                                        <div style="display: inline-flex; gap: 6px;">
-                                            <a href="reset_temp_pass.php?type=admin&id=<?php echo $adm['id']; ?>" class="btn btn-secondary btn-sm" title="Generate Temporary Password" onclick="return confirm('Generate and display a new temporary password for user <?php echo addslashes($adm['username']); ?>?');">
-                                                🔑 Temp Pass
-                                            </a>
-                                            <a href="user_edit.php?type=admin&id=<?php echo $adm['id']; ?>" class="btn btn-secondary btn-sm">
-                                                ✏️ Edit
-                                            </a>
-                                            <?php if ($adm['id'] != ($_SESSION['user_id'] ?? 0)): ?>
-                                                <a href="user_delete.php?type=admin&id=<?php echo $adm['id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete user <?php echo addslashes($adm['username']); ?>?');">
-                                                    🗑️
+                                        <?php 
+                                        $current_is_super_admin = has_role('Super Admin');
+                                        $is_own_account = ($adm['id'] == ($_SESSION['user_id'] ?? 0));
+                                        $is_target_super_admin = ($adm['role'] === 'Super Admin');
+                                        $is_target_other_admin = ($adm['role'] === 'Admin' && !$is_own_account && !$current_is_super_admin);
+                                        ?>
+                                        <?php if ($is_target_super_admin && !$current_is_super_admin): ?>
+                                            <span class="badge" style="background: rgba(239, 68, 68, 0.12); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.25); font-size: 11px; padding: 4px 10px; border-radius: 6px; display: inline-flex; align-items: center; gap: 5px;" title="Only Super Admin has permission to modify or reset this account">
+                                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="12" height="12">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                                </svg>
+                                                Super Admin Only
+                                            </span>
+                                        <?php elseif ($is_target_other_admin): ?>
+                                            <span class="badge" style="background: rgba(100, 116, 139, 0.15); color: #94a3b8; border: 1px solid rgba(148, 163, 184, 0.25); font-size: 11px; padding: 4px 10px; border-radius: 6px; display: inline-flex; align-items: center; gap: 5px;" title="Administrators can only manage their own account">
+                                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="12" height="12">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                                </svg>
+                                                Protected
+                                            </span>
+                                        <?php else: ?>
+                                            <div style="display: inline-flex; gap: 6px;">
+                                                <a href="reset_temp_pass.php?type=admin&id=<?php echo $adm['id']; ?>" class="btn btn-secondary btn-sm" title="Generate Temporary Password" onclick="return confirm('Generate and display a new temporary password for user <?php echo addslashes($adm['username']); ?>?');">
+                                                    🔑 Temp Pass
                                                 </a>
-                                            <?php endif; ?>
-                                        </div>
+                                                <a href="user_edit.php?type=admin&id=<?php echo $adm['id']; ?>" class="btn btn-secondary btn-sm">
+                                                    ✏️ Edit
+                                                </a>
+                                                <?php if (!$is_own_account): ?>
+                                                    <a href="user_delete.php?type=admin&id=<?php echo $adm['id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete user <?php echo addslashes($adm['username']); ?>?');">
+                                                        🗑️
+                                                    </a>
+                                                <?php endif; ?>
+                                            </div>
+                                        <?php endif; ?>
                                     </td>
                                 </tr>
                             <?php endwhile; ?>

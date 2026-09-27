@@ -9,11 +9,12 @@ The **Attendance Feature** provides granular attendance tracking and analytical 
 
 ### 1. 📊 Class-Wise Attendance Performance
 - **Aggregated Overview**: Displays all active classes/grades with total sessions logged, present count, and visual percentage progress bars.
-- **Interactive Click-To-Analyze**: Clicking any class row instantly switches the **Monthly Mode Analysis** view to that specific class.
+- **Dedicated Page Navigation**: Clicking any class row or the `📊 Monthly Breakdown →` button smoothly navigates to the dedicated **Monthly Mode Analysis** page for that selected class.
 
 ### 2. 📅 Monthly Mode Analysis
-- **Month-Year Date Navigation**: Select any month (`YYYY-MM`) with month picker and rapid stepper buttons (`◀ Prev`, `📅 Current Month`, `Next ▶`).
-- **Class Switcher**: Switch classes on the fly from the analytics toolbar without returning to the main dashboard.
+- **Dedicated Breakdown View with Back Button**: Focuses exclusively on the selected class with a prominent `← Back to Class-Wise Attendance Performance` button to seamlessly return to the overview page.
+- **Month-Year Date Navigation**: Select any month (`YYYY-MM`) with custom month picker popover and rapid stepper buttons (`◀ Prev`, `📅 Current Month`, `Next ▶`).
+- **Class Switcher**: Switch classes on the fly from the analytics toolbar without having to return to the main dashboard.
 - **Class Monthly Summary KPI Cards**:
   - **Class Monthly Average**: Overall percentage attendance for the selected month.
   - **Enrolled Students**: Active count of students in the class roster.

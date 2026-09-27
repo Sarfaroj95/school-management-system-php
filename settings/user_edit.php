@@ -36,6 +36,18 @@ if ($type === 'admin') {
     $stmt->execute();
     $user = $stmt->get_result()->fetch_assoc();
     $stmt->close();
+
+    // Security check: Only Super Admin can edit a Super Admin account
+    if ($user && $user['role'] === 'Super Admin' && !has_role('Super Admin')) {
+        header("Location: index.php?tab=staff&error=" . urlencode("Security restriction: Only a Super Admin can modify a Super Admin account."));
+        exit();
+    }
+
+    // Security check: Standard Admin can only edit their own account or staff members
+    if ($user && $user['role'] === 'Admin' && !has_role('Super Admin') && $id != ($_SESSION['user_id'] ?? 0)) {
+        header("Location: index.php?tab=staff&error=" . urlencode("Security restriction: Administrators can only edit their own account or staff members."));
+        exit();
+    }
 } elseif ($type === 'teacher') {
     $stmt = $conn->prepare("SELECT * FROM teachers WHERE id = ? LIMIT 1");
     $stmt->bind_param("i", $id);
@@ -65,7 +77,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = "Full Name is required.";
     } else {
         if ($type === 'admin') {
+            // Security check: Only Super Admin can edit a Super Admin account
+            if ($user['role'] === 'Super Admin' && !has_role('Super Admin')) {
+                header("Location: index.php?tab=staff&error=" . urlencode("Security restriction: Only a Super Admin can modify a Super Admin account."));
+                exit();
+            }
+
+            // Security check: Standard Admin can only edit their own account or staff members
+            if ($user['role'] === 'Admin' && !has_role('Super Admin') && $id != ($_SESSION['user_id'] ?? 0)) {
+                header("Location: index.php?tab=staff&error=" . urlencode("Security restriction: Administrators can only edit their own account or staff members."));
+                exit();
+            }
+
             $role = trim($_POST['role'] ?? 'Staff');
+            // Security check: Only Super Admin can assign the Super Admin role
+            if ($role === 'Super Admin' && !has_role('Super Admin')) {
+                $role = ($user['role'] === 'Admin') ? 'Admin' : 'Staff';
+            }
+
             $username = trim($_POST['username'] ?? $user['username']);
 
             if (!empty($new_temp_pass)) {
@@ -177,7 +206,9 @@ include $root_path . "includes/header.php";
                         <div class="form-group">
                             <label class="form-label" for="role">Role Permission Level</label>
                             <select id="role" name="role" class="form-control">
-                                <option value="Super Admin" <?php echo ($user['role'] === 'Super Admin') ? 'selected' : ''; ?>>Super Admin</option>
+                                <?php if (has_role('Super Admin')): ?>
+                                    <option value="Super Admin" <?php echo ($user['role'] === 'Super Admin') ? 'selected' : ''; ?>>Super Admin</option>
+                                <?php endif; ?>
                                 <option value="Admin" <?php echo ($user['role'] === 'Admin') ? 'selected' : ''; ?>>Admin</option>
                                 <option value="Staff" <?php echo ($user['role'] === 'Staff') ? 'selected' : ''; ?>>Staff</option>
                             </select>

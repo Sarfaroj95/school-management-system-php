@@ -14,7 +14,8 @@ $header_title = "User Provisioning & Credential Generator";
 $current_page = "settings";
 
 $selected_role = trim($_GET['role'] ?? 'Staff');
-if (!in_array($selected_role, ['Admin', 'Staff', 'Teacher', 'Student'])) {
+$allowed_roles = has_role('Super Admin') ? ['Super Admin', 'Admin', 'Staff', 'Teacher', 'Student'] : ['Admin', 'Staff', 'Teacher', 'Student'];
+if (!in_array($selected_role, $allowed_roles)) {
     $selected_role = 'Staff';
 }
 
@@ -41,12 +42,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
     $phone = trim($_POST['phone'] ?? '');
 
+    // Only Super Admin can create Super Admin accounts
+    if ($role === 'Super Admin' && !has_role('Super Admin')) {
+        $role = 'Admin';
+    }
+
     if (empty($username) || empty($temp_pass) || empty($full_name)) {
         $error = "Please fill in the full name, username/ID, and temporary password.";
     } else {
         $hash = password_hash($temp_pass, PASSWORD_BCRYPT);
 
-        if ($role === 'Admin' || $role === 'Staff') {
+        if ($role === 'Super Admin' || $role === 'Admin' || $role === 'Staff') {
             // Check username duplicate
             $chk = $conn->prepare("SELECT id FROM admins WHERE username = ? LIMIT 1");
             $chk->bind_param("s", $username);
@@ -241,6 +247,12 @@ include $root_path . "includes/header.php";
                 <div class="form-group" style="margin-bottom: 20px;">
                     <label class="form-label">Select Account Role Level <span class="required">*</span></label>
                     <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px;">
+                        <?php if (has_role('Super Admin')): ?>
+                            <label class="role-chip <?php echo ($selected_role === 'Super Admin') ? 'active' : ''; ?>" style="border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 8px; cursor: pointer;">
+                                <input type="radio" name="role" value="Super Admin" <?php echo ($selected_role === 'Super Admin') ? 'checked' : ''; ?> onchange="window.location.href='user_create.php?role=Super Admin'" style="display: none;">
+                                👑 Super Admin
+                            </label>
+                        <?php endif; ?>
                         <label class="role-chip <?php echo ($selected_role === 'Staff') ? 'active' : ''; ?>" style="border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 8px; cursor: pointer;">
                             <input type="radio" name="role" value="Staff" <?php echo ($selected_role === 'Staff') ? 'checked' : ''; ?> onchange="window.location.href='user_create.php?role=Staff'" style="display: none;">
                             💼 Staff Member

@@ -9,8 +9,13 @@ $root_path = '../';
 include "../includes/auth.php";
 require_role(['Super Admin', 'Admin', 'Staff', 'Teacher']);
 
-$page_title = "Attendance Analytics & Monthly Breakdown";
-$header_title = "Attendance Analytics";
+$view = $_GET['view'] ?? (isset($_GET['class_id']) ? 'monthly' : 'overview');
+if (!in_array($view, ['overview', 'monthly'])) {
+    $view = 'overview';
+}
+
+$page_title = ($view === 'monthly') ? "Monthly Attendance Breakdown" : "Attendance Analytics & Class Performance";
+$header_title = ($view === 'monthly') ? "Monthly Mode Analysis" : "Attendance Analytics";
 $current_page = "attendance";
 
 // Fetch overall attendance stats grouped by status
@@ -620,384 +625,412 @@ include "../includes/header.php";
 }
 </style>
 
-<div class="report-action-bar">
-    <a href="index.php" class="btn btn-secondary btn-sm">
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="16" height="16">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-        </svg>
-        &larr; Daily Attendance Register
-    </a>
+<?php if ($view === 'overview'): ?>
 
-    <div style="font-size: 13px; color: var(--text-secondary);">
-        Overall Total Logs: <strong><?php echo number_format($total_logs); ?></strong> entries
-    </div>
-</div>
-
-<!-- Overall Metric Cards -->
-<div class="grid-stats">
-    <div class="stat-card emerald">
-        <div class="stat-header">
-            <span class="stat-label">Total Present Logs</span>
-            <div class="stat-icon">✅</div>
-        </div>
-        <div class="stat-value"><?php echo number_format($counts['Present']); ?></div>
-        <div class="stat-footer"><?php echo $total_logs > 0 ? round(($counts['Present']/$total_logs)*100, 1) : 0; ?>% of all records</div>
-    </div>
-
-    <div class="stat-card rose">
-        <div class="stat-header">
-            <span class="stat-label">Absences Logged</span>
-            <div class="stat-icon">✕</div>
-        </div>
-        <div class="stat-value"><?php echo number_format($counts['Absent']); ?></div>
-        <div class="stat-footer"><?php echo $total_logs > 0 ? round(($counts['Absent']/$total_logs)*100, 1) : 0; ?>% unexcused</div>
-    </div>
-
-    <div class="stat-card amber">
-        <div class="stat-header">
-            <span class="stat-label">Late Arrivals</span>
-            <div class="stat-icon">⏱️</div>
-        </div>
-        <div class="stat-value"><?php echo number_format($counts['Late']); ?></div>
-        <div class="stat-footer"><?php echo number_format($counts['Late']); ?> tardiness instances</div>
-    </div>
-
-    <div class="stat-card sky">
-        <div class="stat-header">
-            <span class="stat-label">Excused Leaves</span>
-            <div class="stat-icon">📄</div>
-        </div>
-        <div class="stat-value"><?php echo number_format($counts['Excused']); ?></div>
-        <div class="stat-footer">Official approvals & medicals</div>
-    </div>
-</div>
-
-<!-- ========================================================
-     1. Class-Wise Attendance Performance Summary Table
-     ======================================================== -->
-<div class="card" style="margin-bottom: 30px;">
-    <div class="card-header">
-        <div class="card-title">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20" style="color: var(--primary);">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+    <div class="report-action-bar">
+        <a href="index.php" class="btn btn-secondary btn-sm">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="16" height="16">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
-            Class-Wise Attendance Performance
-        </div>
-        <div style="font-size: 12.5px; color: var(--text-muted);">
-            💡 Click on any class row to view its <strong>Monthly Student Breakdown & Percentage</strong>
-        </div>
-    </div>
-
-    <div class="table-responsive">
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>Class Name</th>
-                    <th>Section</th>
-                    <th>Total Logged Days</th>
-                    <th>Present Count</th>
-                    <th>Attendance Percentage</th>
-                    <th style="text-align: right;">Monthly Mode Analysis</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php if (empty($class_reports)): ?>
-                    <tr>
-                        <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 40px;">
-                            No class attendance logs found.
-                        </td>
-                    </tr>
-                <?php else: ?>
-                    <?php foreach ($class_reports as $cr): 
-                        $pct = $cr['total_records'] > 0 ? round(($cr['present_records'] / $cr['total_records']) * 100, 1) : 0;
-                        $is_active_class = ($cr['id'] == $selected_class_id);
-                        $bar_color = ($pct >= 85) ? '#10b981' : (($pct >= 70) ? '#0ea5e9' : (($pct >= 50) ? '#f59e0b' : '#ef4444'));
-                    ?>
-                        <tr class="clickable-class-row <?php echo $is_active_class ? 'active-row' : ''; ?>" onclick="window.location='report.php?class_id=<?php echo $cr['id']; ?>&month=<?php echo $selected_month; ?>#monthlyBreakdown'">
-                            <td style="font-weight: 700; color: #ffffff;">
-                                🏫 <?php echo htmlspecialchars($cr['class_name']); ?>
-                            </td>
-                            <td><span class="badge badge-info"><?php echo htmlspecialchars($cr['section']); ?></span></td>
-                            <td><?php echo number_format($cr['total_records']); ?></td>
-                            <td><?php echo number_format($cr['present_records']); ?></td>
-                            <td>
-                                <div style="display: flex; align-items: center; gap: 10px;">
-                                    <div class="att-progress-track">
-                                        <div class="att-progress-fill" style="width: <?php echo $pct; ?>%; background: <?php echo $bar_color; ?>;"></div>
-                                    </div>
-                                    <span style="font-weight: 700; color: <?php echo $bar_color; ?>;"><?php echo $pct; ?>%</span>
-                                </div>
-                            </td>
-                            <td style="text-align: right;">
-                                <a href="report.php?class_id=<?php echo $cr['id']; ?>&month=<?php echo $selected_month; ?>#monthlyBreakdown" class="btn <?php echo $is_active_class ? 'btn-primary' : 'btn-secondary'; ?> btn-sm">
-                                    📊 Monthly Breakdown &rarr;
-                                </a>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<!-- ========================================================
-     2. NEW FEATURE: Monthly Mode Analysis by Class & Student
-     ======================================================== -->
-<div class="card" id="monthlyBreakdown" style="border: 1px solid rgba(99, 102, 241, 0.3); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 0 15px rgba(99, 102, 241, 0.15);">
-    <div class="card-header" style="background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%);">
-        <div class="card-title" style="display: flex; align-items: center; gap: 8px;">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="22" height="22" style="color: #818cf8;">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            <span>Monthly Mode Analysis: <strong><?php echo htmlspecialchars($current_class ? ($current_class['class_name'] . ' — Section ' . $current_class['section']) : 'All Classes'); ?></strong></span>
-        </div>
-
-        <div style="font-size: 13px; color: #818cf8; font-weight: 700;">
-            📅 Period: <?php echo $month_label; ?>
-        </div>
-    </div>
-
-    <!-- Custom Month & Class Selection Filter Bar -->
-    <div class="month-filter-bar">
-        <form method="GET" action="report.php#monthlyBreakdown" id="reportFilterForm" style="display: flex; gap: 14px; align-items: center; flex-wrap: wrap; width: 100%; justify-content: space-between;">
-            <input type="hidden" name="class_id" id="hiddenReportClassId" value="<?php echo $selected_class_id; ?>">
-            <input type="hidden" name="month" id="hiddenReportMonth" value="<?php echo htmlspecialchars($selected_month); ?>">
-
-            <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
-                <!-- 1. CUSTOM CLASS DROPDOWN -->
-                <div class="custom-att-dropdown" id="reportClassDropdown">
-                    <button type="button" class="custom-dropdown-btn" id="reportClassDropdownBtn" onclick="toggleReportClassDropdown(event)">
-                        <span class="custom-dropdown-icon">
-                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="14" height="14">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                            </svg>
-                        </span>
-                        <span class="class-title"><?php echo htmlspecialchars($current_class['class_name'] ?? 'Select Class'); ?></span>
-                        <span class="section-pill"><?php echo htmlspecialchars($current_class ? ('Section ' . $current_class['section']) : ''); ?></span>
-                        <svg class="custom-dropdown-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="14" height="14">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                        </svg>
-                    </button>
-                    
-                    <div class="custom-dropdown-menu" id="reportClassDropdownMenu" onclick="event.stopPropagation()">
-                        <div class="custom-dropdown-header">
-                            <span>Select Class / Section</span>
-                            <span class="count-pill"><?php echo count($all_classes); ?> Classes</span>
-                        </div>
-                        <div class="custom-dropdown-list">
-                            <?php foreach ($all_classes as $c): 
-                                $is_active = ($selected_class_id == $c['id']);
-                            ?>
-                                <div class="custom-dropdown-item <?php echo $is_active ? 'selected' : ''; ?>" onclick="selectReportClass('<?php echo $c['id']; ?>')">
-                                    <div class="item-main">
-                                        <span class="item-icon">🏫</span>
-                                        <span class="item-name"><?php echo htmlspecialchars($c['class_name']); ?></span>
-                                        <span class="item-sec">Sec <?php echo htmlspecialchars($c['section']); ?></span>
-                                    </div>
-                                    <?php if ($is_active): ?>
-                                        <span class="item-check">✓</span>
-                                    <?php endif; ?>
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 2. CUSTOM MONTH PICKER -->
-                <div class="custom-att-monthpicker" id="reportMonthPicker">
-                    <button type="button" class="custom-monthpicker-btn" id="reportMonthPickerBtn" onclick="toggleReportMonthPicker(event)">
-                        <span class="custom-monthpicker-icon">
-                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="14" height="14">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                        </span>
-                        <span class="month-main-str"><?php echo $month_label; ?></span>
-                        <?php if ($is_current_month): ?>
-                            <span class="current-month-indicator-pill">Current</span>
-                        <?php endif; ?>
-                        <svg class="custom-monthpicker-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="14" height="14">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                        </svg>
-                    </button>
-                    
-                    <div class="custom-monthpicker-popover" id="reportMonthPopover" onclick="event.stopPropagation()">
-                        <div class="mp-header">
-                            <button type="button" class="mp-nav-btn" onclick="navigateReportYear(-1)" title="Previous Year">◀</button>
-                            <span class="mp-year-label" id="mpYearLabel"><!-- Dynamically filled --></span>
-                            <button type="button" class="mp-nav-btn" onclick="navigateReportYear(1)" title="Next Year">▶</button>
-                        </div>
-                        
-                        <div class="mp-months-grid" id="mpMonthsGrid">
-                            <!-- Dynamically rendered 12 months -->
-                        </div>
-                        
-                        <div class="mp-quick-shortcuts">
-                            <button type="button" class="mp-quick-btn" onclick="selectReportMonthQuick('<?php echo date('Y-m'); ?>')">📅 Current Month (<?php echo date('M Y'); ?>)</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Quick Month Steppers -->
-                <div class="date-steppers">
-                    <a href="report.php?class_id=<?php echo $selected_class_id; ?>&month=<?php echo $prev_month; ?>#monthlyBreakdown" class="date-stepper-btn" title="Previous Month">
-                        ◀ Prev
-                    </a>
-                    <a href="report.php?class_id=<?php echo $selected_class_id; ?>&month=<?php echo $current_month_str; ?>#monthlyBreakdown" class="date-stepper-btn <?php echo $is_current_month ? 'active' : ''; ?>" title="Jump to Current Month">
-                        📅 Current Month
-                    </a>
-                    <a href="report.php?class_id=<?php echo $selected_class_id; ?>&month=<?php echo $next_month; ?>#monthlyBreakdown" class="date-stepper-btn" title="Next Month">
-                        Next ▶
-                    </a>
-                </div>
-            </div>
-
-            <div style="font-size: 13px; color: var(--text-muted);">
-                Showing stats for <strong><?php echo $month_label; ?></strong>
-            </div>
-        </form>
-    </div>
-
-    <!-- Monthly Metric Cards for Selected Class -->
-    <div style="padding: 20px 24px 10px 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
-        <div style="background: rgba(15, 23, 42, 0.6); padding: 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.08);">
-            <div style="font-size: 12px; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Class Monthly Average</div>
-            <div style="font-size: 24px; font-weight: 800; color: #34d399; margin-top: 4px;"><?php echo $class_monthly_avg; ?>%</div>
-            <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 2px;"><?php echo $class_total_present; ?> of <?php echo $class_total_sessions; ?> total student days</div>
-        </div>
-
-        <div style="background: rgba(15, 23, 42, 0.6); padding: 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.08);">
-            <div style="font-size: 12px; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Enrolled Students</div>
-            <div style="font-size: 24px; font-weight: 800; color: #818cf8; margin-top: 4px;"><?php echo count($monthly_students); ?></div>
-            <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 2px;">Active in this roster</div>
-        </div>
-
-        <div style="background: rgba(15, 23, 42, 0.6); padding: 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.08);">
-            <div style="font-size: 12px; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Recorded Class Days</div>
-            <div style="font-size: 24px; font-weight: 800; color: #38bdf8; margin-top: 4px;"><?php echo $unique_recorded_days; ?> Days</div>
-            <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 2px;">Logged in <?php echo $month_label; ?></div>
-        </div>
-
-        <div style="background: rgba(15, 23, 42, 0.6); padding: 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.08);">
-            <div style="font-size: 12px; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Top Attendance Rate</div>
-            <div style="font-size: 16px; font-weight: 800; color: #fbbf24; margin-top: 8px; word-break: break-word;">
-                <?php echo $top_performer ? htmlspecialchars($top_performer) : '—'; ?>
-            </div>
-            <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 2px;">Class best performer</div>
-        </div>
-    </div>
-
-    <!-- Student-by-Student Monthly Attendance & Percentage Breakdown Table -->
-    <div class="table-responsive">
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th class="col-roll-no">Roll No</th>
-                    <th>Student Name</th>
-                    <th>Gender</th>
-                    <th style="text-align: center;">Present</th>
-                    <th style="text-align: center;">Absent</th>
-                    <th style="text-align: center;">Late</th>
-                    <th style="text-align: center;">Excused</th>
-                    <th style="text-align: center;">Total Sessions</th>
-                    <th>Monthly Attendance %</th>
-                    <th style="text-align: center;">Performance Tier</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php if (empty($monthly_students)): ?>
-                    <tr>
-                        <td colspan="10" style="text-align: center; color: var(--text-muted); padding: 40px;">
-                            No active students found in this class.
-                        </td>
-                    </tr>
-                <?php else: ?>
-                    <?php foreach ($monthly_students as $stu): 
-                        $rate = $stu['attendance_rate'];
-                        
-                        // Performance Tier & Color
-                        if ($rate >= 90) {
-                            $tier_class = 'tier-excellent';
-                            $tier_label = '🌟 Excellent (≥90%)';
-                            $bar_c = '#10b981';
-                        } elseif ($rate >= 75) {
-                            $tier_class = 'tier-good';
-                            $tier_label = '✅ Good (75-89%)';
-                            $bar_c = '#0ea5e9';
-                        } elseif ($rate >= 60) {
-                            $tier_class = 'tier-warning';
-                            $tier_label = '⚠️ Warning (60-74%)';
-                            $bar_c = '#f59e0b';
-                        } else {
-                            $tier_class = 'tier-critical';
-                            $tier_label = '🚨 Critical (<60%)';
-                            $bar_c = '#ef4444';
-                        }
-                    ?>
-                        <tr>
-                            <td class="col-roll-no">
-                                <span class="badge badge-info" style="font-family: monospace;">
-                                    <?php echo htmlspecialchars($stu['roll_no']); ?>
-                                </span>
-                            </td>
-                            <td style="font-weight: 600; color: #ffffff;">
-                                <?php echo htmlspecialchars($stu['first_name'] . ' ' . $stu['last_name']); ?>
-                            </td>
-                            <td style="color: var(--text-secondary); font-size: 13px;">
-                                <?php echo htmlspecialchars($stu['gender']); ?>
-                            </td>
-                            <td style="text-align: center;">
-                                <span style="color: #34d399; font-weight: 700; background: rgba(16, 185, 129, 0.12); padding: 3px 8px; border-radius: 5px;">
-                                    <?php echo $stu['present_count']; ?>
-                                </span>
-                            </td>
-                            <td style="text-align: center;">
-                                <span style="color: #f87171; font-weight: 700; background: rgba(239, 68, 68, 0.12); padding: 3px 8px; border-radius: 5px;">
-                                    <?php echo $stu['absent_count']; ?>
-                                </span>
-                            </td>
-                            <td style="text-align: center;">
-                                <span style="color: #fbbf24; font-weight: 700; background: rgba(245, 158, 11, 0.12); padding: 3px 8px; border-radius: 5px;">
-                                    <?php echo $stu['late_count']; ?>
-                                </span>
-                            </td>
-                            <td style="text-align: center;">
-                                <span style="color: #38bdf8; font-weight: 700; background: rgba(14, 165, 233, 0.12); padding: 3px 8px; border-radius: 5px;">
-                                    <?php echo $stu['excused_count']; ?>
-                                </span>
-                            </td>
-                            <td style="text-align: center; font-weight: 600; color: var(--text-secondary);">
-                                <?php echo $stu['total_sessions']; ?>
-                            </td>
-                            <td>
-                                <div style="display: flex; align-items: center; gap: 10px;">
-                                    <div class="att-progress-track">
-                                        <div class="att-progress-fill" style="width: <?php echo $rate; ?>%; background: <?php echo $bar_c; ?>;"></div>
-                                    </div>
-                                    <span style="font-weight: 700; color: <?php echo $bar_c; ?>;"><?php echo $rate; ?>%</span>
-                                </div>
-                            </td>
-                            <td style="text-align: center;">
-                                <span class="tier-badge <?php echo $tier_class; ?>">
-                                    <?php echo $tier_label; ?>
-                                </span>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-            </tbody>
-        </table>
-    </div>
-
-    <div style="padding: 14px 24px; border-top: 1px solid var(--border-color); background: rgba(15, 23, 42, 0.4); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-        <div style="font-size: 12px; color: var(--text-muted);">
-            Evaluation based on total logged sessions for <?php echo $month_label; ?>. Excused leaves are tracked separately.
-        </div>
-        <a href="index.php?class_id=<?php echo $selected_class_id; ?>" class="btn btn-secondary btn-sm">
-            ✏️ Take / Edit Attendance for this Class &rarr;
+            &larr; Daily Attendance Register
         </a>
+
+        <div style="font-size: 13px; color: var(--text-secondary);">
+            Overall Total Logs: <strong><?php echo number_format($total_logs); ?></strong> entries
+        </div>
     </div>
-</div>
+
+    <!-- Overall Metric Cards -->
+    <div class="grid-stats">
+        <div class="stat-card emerald">
+            <div class="stat-header">
+                <span class="stat-label">Total Present Logs</span>
+                <div class="stat-icon">✅</div>
+            </div>
+            <div class="stat-value"><?php echo number_format($counts['Present']); ?></div>
+            <div class="stat-footer"><?php echo $total_logs > 0 ? round(($counts['Present']/$total_logs)*100, 1) : 0; ?>% of all records</div>
+        </div>
+
+        <div class="stat-card rose">
+            <div class="stat-header">
+                <span class="stat-label">Absences Logged</span>
+                <div class="stat-icon">✕</div>
+            </div>
+            <div class="stat-value"><?php echo number_format($counts['Absent']); ?></div>
+            <div class="stat-footer"><?php echo $total_logs > 0 ? round(($counts['Absent']/$total_logs)*100, 1) : 0; ?>% unexcused</div>
+        </div>
+
+        <div class="stat-card amber">
+            <div class="stat-header">
+                <span class="stat-label">Late Arrivals</span>
+                <div class="stat-icon">⏱️</div>
+            </div>
+            <div class="stat-value"><?php echo number_format($counts['Late']); ?></div>
+            <div class="stat-footer"><?php echo number_format($counts['Late']); ?> tardiness instances</div>
+        </div>
+
+        <div class="stat-card sky">
+            <div class="stat-header">
+                <span class="stat-label">Excused Leaves</span>
+                <div class="stat-icon">📄</div>
+            </div>
+            <div class="stat-value"><?php echo number_format($counts['Excused']); ?></div>
+            <div class="stat-footer">Official approvals & medicals</div>
+        </div>
+    </div>
+
+    <!-- ========================================================
+         1. Class-Wise Attendance Performance Summary Table
+         ======================================================== -->
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20" style="color: var(--primary);">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                Class-Wise Attendance Performance
+            </div>
+            <div style="font-size: 12.5px; color: var(--text-muted);">
+                💡 Click on any class row or <strong>Monthly Breakdown</strong> to view dedicated student-by-student analytics
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Class Name</th>
+                        <th>Section</th>
+                        <th>Total Logged Days</th>
+                        <th>Present Count</th>
+                        <th>Attendance Percentage</th>
+                        <th style="text-align: right;">Monthly Mode Analysis</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if (empty($class_reports)): ?>
+                        <tr>
+                            <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 40px;">
+                                No class attendance logs found.
+                            </td>
+                        </tr>
+                    <?php else: ?>
+                        <?php foreach ($class_reports as $cr): 
+                            $pct = $cr['total_records'] > 0 ? round(($cr['present_records'] / $cr['total_records']) * 100, 1) : 0;
+                            $bar_color = ($pct >= 85) ? '#10b981' : (($pct >= 70) ? '#0ea5e9' : (($pct >= 50) ? '#f59e0b' : '#ef4444'));
+                        ?>
+                            <tr class="clickable-class-row" onclick="window.location='report.php?view=monthly&class_id=<?php echo $cr['id']; ?>&month=<?php echo $selected_month; ?>'">
+                                <td style="font-weight: 700; color: #ffffff;">
+                                    🏫 <?php echo htmlspecialchars($cr['class_name']); ?>
+                                </td>
+                                <td><span class="badge badge-info"><?php echo htmlspecialchars($cr['section']); ?></span></td>
+                                <td><?php echo number_format($cr['total_records']); ?></td>
+                                <td><?php echo number_format($cr['present_records']); ?></td>
+                                <td>
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <div class="att-progress-track">
+                                            <div class="att-progress-fill" style="width: <?php echo $pct; ?>%; background: <?php echo $bar_color; ?>;"></div>
+                                        </div>
+                                        <span style="font-weight: 700; color: <?php echo $bar_color; ?>;"><?php echo $pct; ?>%</span>
+                                    </div>
+                                </td>
+                                <td style="text-align: right;">
+                                    <a href="report.php?view=monthly&class_id=<?php echo $cr['id']; ?>&month=<?php echo $selected_month; ?>" class="btn btn-primary btn-sm">
+                                        📊 Monthly Breakdown &rarr;
+                                    </a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+<?php else: /* Monthly Mode Analysis Dedicated View */ ?>
+
+    <!-- Action Bar with Back to Class-Wise Attendance Performance Button -->
+    <div class="report-action-bar">
+        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <a href="report.php" class="btn btn-secondary btn-sm" title="Return to Class-Wise Attendance Performance Overview">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="16" height="16">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                &larr; Back to Class-Wise Attendance Performance
+            </a>
+            <a href="index.php?class_id=<?php echo $selected_class_id; ?>" class="btn btn-secondary btn-sm">
+                📝 Daily Attendance Register
+            </a>
+        </div>
+
+        <div style="font-size: 13px; color: var(--text-secondary); display: flex; align-items: center; gap: 6px;">
+            <span>Attendance Analytics &gt;</span>
+            <span class="badge badge-info" style="font-size: 12px;">
+                <?php echo htmlspecialchars($current_class['class_name'] ?? 'Class'); ?> (Sec <?php echo htmlspecialchars($current_class['section'] ?? 'A'); ?>) · <?php echo $month_label; ?>
+            </span>
+        </div>
+    </div>
+
+    <!-- ========================================================
+         2. Monthly Mode Analysis by Class & Student
+         ======================================================== -->
+    <div class="card" id="monthlyBreakdown" style="border: 1px solid rgba(99, 102, 241, 0.3); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 0 15px rgba(99, 102, 241, 0.15);">
+        <div class="card-header" style="background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%);">
+            <div class="card-title" style="display: flex; align-items: center; gap: 8px;">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="22" height="22" style="color: #818cf8;">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <span>Monthly Mode Analysis: <strong><?php echo htmlspecialchars($current_class ? ($current_class['class_name'] . ' — Section ' . $current_class['section']) : 'All Classes'); ?></strong></span>
+            </div>
+
+            <div style="font-size: 13px; color: #818cf8; font-weight: 700;">
+                📅 Period: <?php echo $month_label; ?>
+            </div>
+        </div>
+
+        <!-- Custom Month & Class Selection Filter Bar -->
+        <div class="month-filter-bar">
+            <form method="GET" action="report.php" id="reportFilterForm" style="display: flex; gap: 14px; align-items: center; flex-wrap: wrap; width: 100%; justify-content: space-between;">
+                <input type="hidden" name="view" value="monthly">
+                <input type="hidden" name="class_id" id="hiddenReportClassId" value="<?php echo $selected_class_id; ?>">
+                <input type="hidden" name="month" id="hiddenReportMonth" value="<?php echo htmlspecialchars($selected_month); ?>">
+
+                <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+                    <!-- 1. CUSTOM CLASS DROPDOWN -->
+                    <div class="custom-att-dropdown" id="reportClassDropdown">
+                        <button type="button" class="custom-dropdown-btn" id="reportClassDropdownBtn" onclick="toggleReportClassDropdown(event)">
+                            <span class="custom-dropdown-icon">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="14" height="14">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                </svg>
+                            </span>
+                            <span class="class-title"><?php echo htmlspecialchars($current_class['class_name'] ?? 'Select Class'); ?></span>
+                            <span class="section-pill"><?php echo htmlspecialchars($current_class ? ('Section ' . $current_class['section']) : ''); ?></span>
+                            <svg class="custom-dropdown-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="14" height="14">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        
+                        <div class="custom-dropdown-menu" id="reportClassDropdownMenu" onclick="event.stopPropagation()">
+                            <div class="custom-dropdown-header">
+                                <span>Select Class / Section</span>
+                                <span class="count-pill"><?php echo count($all_classes); ?> Classes</span>
+                            </div>
+                            <div class="custom-dropdown-list">
+                                <?php foreach ($all_classes as $c): 
+                                    $is_active = ($selected_class_id == $c['id']);
+                                ?>
+                                    <div class="custom-dropdown-item <?php echo $is_active ? 'selected' : ''; ?>" onclick="selectReportClass('<?php echo $c['id']; ?>')">
+                                        <div class="item-main">
+                                            <span class="item-icon">🏫</span>
+                                            <span class="item-name"><?php echo htmlspecialchars($c['class_name']); ?></span>
+                                            <span class="item-sec">Sec <?php echo htmlspecialchars($c['section']); ?></span>
+                                        </div>
+                                        <?php if ($is_active): ?>
+                                            <span class="item-check">✓</span>
+                                        <?php endif; ?>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. CUSTOM MONTH PICKER -->
+                    <div class="custom-att-monthpicker" id="reportMonthPicker">
+                        <button type="button" class="custom-monthpicker-btn" id="reportMonthPickerBtn" onclick="toggleReportMonthPicker(event)">
+                            <span class="custom-monthpicker-icon">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="14" height="14">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                            </span>
+                            <span class="month-main-str"><?php echo $month_label; ?></span>
+                            <?php if ($is_current_month): ?>
+                                <span class="current-month-indicator-pill">Current</span>
+                            <?php endif; ?>
+                            <svg class="custom-monthpicker-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="14" height="14">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        
+                        <div class="custom-monthpicker-popover" id="reportMonthPopover" onclick="event.stopPropagation()">
+                            <div class="mp-header">
+                                <button type="button" class="mp-nav-btn" onclick="navigateReportYear(-1)" title="Previous Year">◀</button>
+                                <span class="mp-year-label" id="mpYearLabel"><!-- Dynamically filled --></span>
+                                <button type="button" class="mp-nav-btn" onclick="navigateReportYear(1)" title="Next Year">▶</button>
+                            </div>
+                            
+                            <div class="mp-months-grid" id="mpMonthsGrid">
+                                <!-- Dynamically rendered 12 months -->
+                            </div>
+                            
+                            <div class="mp-quick-shortcuts">
+                                <button type="button" class="mp-quick-btn" onclick="selectReportMonthQuick('<?php echo date('Y-m'); ?>')">📅 Current Month (<?php echo date('M Y'); ?>)</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Month Steppers -->
+                    <div class="date-steppers">
+                        <a href="report.php?view=monthly&class_id=<?php echo $selected_class_id; ?>&month=<?php echo $prev_month; ?>" class="date-stepper-btn" title="Previous Month">
+                            ◀ Prev
+                        </a>
+                        <a href="report.php?view=monthly&class_id=<?php echo $selected_class_id; ?>&month=<?php echo $current_month_str; ?>" class="date-stepper-btn <?php echo $is_current_month ? 'active' : ''; ?>" title="Jump to Current Month">
+                            📅 Current Month
+                        </a>
+                        <a href="report.php?view=monthly&class_id=<?php echo $selected_class_id; ?>&month=<?php echo $next_month; ?>" class="date-stepper-btn" title="Next Month">
+                            Next ▶
+                        </a>
+                    </div>
+                </div>
+
+                <div style="font-size: 13px; color: var(--text-muted);">
+                    Showing stats for <strong><?php echo $month_label; ?></strong>
+                </div>
+            </form>
+        </div>
+
+        <!-- Monthly Metric Cards for Selected Class -->
+        <div style="padding: 20px 24px 10px 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+            <div style="background: rgba(15, 23, 42, 0.6); padding: 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.08);">
+                <div style="font-size: 12px; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Class Monthly Average</div>
+                <div style="font-size: 24px; font-weight: 800; color: #34d399; margin-top: 4px;"><?php echo $class_monthly_avg; ?>%</div>
+                <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 2px;"><?php echo $class_total_present; ?> of <?php echo $class_total_sessions; ?> total student days</div>
+            </div>
+
+            <div style="background: rgba(15, 23, 42, 0.6); padding: 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.08);">
+                <div style="font-size: 12px; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Enrolled Students</div>
+                <div style="font-size: 24px; font-weight: 800; color: #818cf8; margin-top: 4px;"><?php echo count($monthly_students); ?></div>
+                <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 2px;">Active in this roster</div>
+            </div>
+
+            <div style="background: rgba(15, 23, 42, 0.6); padding: 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.08);">
+                <div style="font-size: 12px; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Recorded Class Days</div>
+                <div style="font-size: 24px; font-weight: 800; color: #38bdf8; margin-top: 4px;"><?php echo $unique_recorded_days; ?> Days</div>
+                <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 2px;">Logged in <?php echo $month_label; ?></div>
+            </div>
+
+            <div style="background: rgba(15, 23, 42, 0.6); padding: 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.08);">
+                <div style="font-size: 12px; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Top Attendance Rate</div>
+                <div style="font-size: 16px; font-weight: 800; color: #fbbf24; margin-top: 8px; word-break: break-word;">
+                    <?php echo $top_performer ? htmlspecialchars($top_performer) : '—'; ?>
+                </div>
+                <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 2px;">Class best performer</div>
+            </div>
+        </div>
+
+        <!-- Student-by-Student Monthly Attendance & Percentage Breakdown Table -->
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th class="col-roll-no">Roll No</th>
+                        <th>Student Name</th>
+                        <th>Gender</th>
+                        <th style="text-align: center;">Present</th>
+                        <th style="text-align: center;">Absent</th>
+                        <th style="text-align: center;">Late</th>
+                        <th style="text-align: center;">Excused</th>
+                        <th style="text-align: center;">Total Sessions</th>
+                        <th>Monthly Attendance %</th>
+                        <th style="text-align: center;">Performance Tier</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if (empty($monthly_students)): ?>
+                        <tr>
+                            <td colspan="10" style="text-align: center; color: var(--text-muted); padding: 40px;">
+                                No active students found in this class.
+                            </td>
+                        </tr>
+                    <?php else: ?>
+                        <?php foreach ($monthly_students as $stu): 
+                            $rate = $stu['attendance_rate'];
+                            
+                            // Performance Tier & Color
+                            if ($rate >= 90) {
+                                $tier_class = 'tier-excellent';
+                                $tier_label = '🌟 Excellent (≥90%)';
+                                $bar_c = '#10b981';
+                            } elseif ($rate >= 75) {
+                                $tier_class = 'tier-good';
+                                $tier_label = '✅ Good (75-89%)';
+                                $bar_c = '#0ea5e9';
+                            } elseif ($rate >= 60) {
+                                $tier_class = 'tier-warning';
+                                $tier_label = '⚠️ Warning (60-74%)';
+                                $bar_c = '#f59e0b';
+                            } else {
+                                $tier_class = 'tier-critical';
+                                $tier_label = '🚨 Critical (<60%)';
+                                $bar_c = '#ef4444';
+                            }
+                        ?>
+                            <tr>
+                                <td class="col-roll-no">
+                                    <span class="badge badge-info" style="font-family: monospace;">
+                                        <?php echo htmlspecialchars($stu['roll_no']); ?>
+                                    </span>
+                                </td>
+                                <td style="font-weight: 600; color: #ffffff;">
+                                    <?php echo htmlspecialchars($stu['first_name'] . ' ' . $stu['last_name']); ?>
+                                </td>
+                                <td style="color: var(--text-secondary); font-size: 13px;">
+                                    <?php echo htmlspecialchars($stu['gender']); ?>
+                                </td>
+                                <td style="text-align: center;">
+                                    <span style="color: #34d399; font-weight: 700; background: rgba(16, 185, 129, 0.12); padding: 3px 8px; border-radius: 5px;">
+                                        <?php echo $stu['present_count']; ?>
+                                    </span>
+                                </td>
+                                <td style="text-align: center;">
+                                    <span style="color: #f87171; font-weight: 700; background: rgba(239, 68, 68, 0.12); padding: 3px 8px; border-radius: 5px;">
+                                        <?php echo $stu['absent_count']; ?>
+                                    </span>
+                                </td>
+                                <td style="text-align: center;">
+                                    <span style="color: #fbbf24; font-weight: 700; background: rgba(245, 158, 11, 0.12); padding: 3px 8px; border-radius: 5px;">
+                                        <?php echo $stu['late_count']; ?>
+                                    </span>
+                                </td>
+                                <td style="text-align: center;">
+                                    <span style="color: #38bdf8; font-weight: 700; background: rgba(14, 165, 233, 0.12); padding: 3px 8px; border-radius: 5px;">
+                                        <?php echo $stu['excused_count']; ?>
+                                    </span>
+                                </td>
+                                <td style="text-align: center; font-weight: 600; color: var(--text-secondary);">
+                                    <?php echo $stu['total_sessions']; ?>
+                                </td>
+                                <td>
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <div class="att-progress-track">
+                                            <div class="att-progress-fill" style="width: <?php echo $rate; ?>%; background: <?php echo $bar_c; ?>;"></div>
+                                        </div>
+                                        <span style="font-weight: 700; color: <?php echo $bar_c; ?>;"><?php echo $rate; ?>%</span>
+                                    </div>
+                                </td>
+                                <td style="text-align: center;">
+                                    <span class="tier-badge <?php echo $tier_class; ?>">
+                                        <?php echo $tier_label; ?>
+                                    </span>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
+
+        <div style="padding: 14px 24px; border-top: 1px solid var(--border-color); background: rgba(15, 23, 42, 0.4); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <a href="report.php" class="btn btn-secondary btn-sm">
+                &larr; Back to Class-Wise Attendance Performance
+            </a>
+            <a href="index.php?class_id=<?php echo $selected_class_id; ?>" class="btn btn-primary btn-sm">
+                ✏️ Take / Edit Attendance for this Class &rarr;
+            </a>
+        </div>
+    </div>
+
+<?php endif; ?>
 
 <script>
 // Custom Dropdown & Month Picker Handlers for Attendance Analytics Page Only

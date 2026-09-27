@@ -24,6 +24,30 @@ if ($type === 'admin') {
         exit();
     }
 
+    // Check target user's role
+    $chk = $conn->prepare("SELECT role, username FROM admins WHERE id = ? LIMIT 1");
+    $chk->bind_param("i", $id);
+    $chk->execute();
+    $target_admin = $chk->get_result()->fetch_assoc();
+    $chk->close();
+
+    if (!$target_admin) {
+        header("Location: index.php?tab=staff&error=" . urlencode("Administrative user not found."));
+        exit();
+    }
+
+    // Security check: Only Super Admin can delete a Super Admin account
+    if ($target_admin['role'] === 'Super Admin' && !has_role('Super Admin')) {
+        header("Location: index.php?tab=staff&error=" . urlencode("Security restriction: Only a Super Admin can delete a Super Admin account."));
+        exit();
+    }
+
+    // Security check: Standard Admin cannot delete other Admin accounts
+    if ($target_admin['role'] === 'Admin' && !has_role('Super Admin')) {
+        header("Location: index.php?tab=staff&error=" . urlencode("Security restriction: Only a Super Admin can delete an Administrator account."));
+        exit();
+    }
+
     $stmt = $conn->prepare("DELETE FROM admins WHERE id = ?");
     $stmt->bind_param("i", $id);
     if ($stmt->execute()) {

@@ -33,6 +33,20 @@ if ($type === 'admin') {
     $stmt->execute();
     $res = $stmt->get_result();
     if ($u = $res->fetch_assoc()) {
+        // Enforce Super Admin security restriction
+        if ($u['role'] === 'Super Admin' && !has_role('Super Admin')) {
+            $stmt->close();
+            header("Location: index.php?tab=staff&error=" . urlencode("Security restriction: Only a Super Admin can reset credentials for a Super Admin account."));
+            exit();
+        }
+
+        // Enforce Admin restriction: Admins can only reset their own account or staff members
+        if ($u['role'] === 'Admin' && !has_role('Super Admin') && $id != ($_SESSION['user_id'] ?? 0)) {
+            $stmt->close();
+            header("Location: index.php?tab=staff&error=" . urlencode("Security restriction: Administrators can only reset credentials for their own account or staff members."));
+            exit();
+        }
+
         $user_identifier = $u['username'];
         $user_name = $u['full_name'];
         $user_role = $u['role'];
