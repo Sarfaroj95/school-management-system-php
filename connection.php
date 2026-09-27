@@ -21,20 +21,20 @@ if (session_status() === PHP_SESSION_NONE) {
 if (!defined('DB_HOST')) {
     // Remote DB (InfinityFree)
 
-    // define('DB_HOST', 'sql311.infinityfree.com');
-    // define('DB_USER', 'if0_42904158');
-    // define('DB_PASS', 'QdAc5aHcOV');
-    // define('DB_NAME', 'if0_42904158_school_management_db');
-    // define('DB_PORT', 3306);
+    define('DB_HOST', 'sql311.infinityfree.com');
+    define('DB_USER', 'if0_42904158');
+    define('DB_PASS', 'QdAc5aHcOV');
+    define('DB_NAME', 'if0_42904158_school_management_db');
+    define('DB_PORT', 3306);
 
 
     // For Local XAMPP/WAMP:
 
-    define('DB_HOST', 'localhost');
-    define('DB_USER', 'root');
-    define('DB_PASS', '');
-    define('DB_NAME', 'school_db');
-    define('DB_PORT', 3306);
+    // define('DB_HOST', 'localhost');
+    // define('DB_USER', 'root');
+    // define('DB_PASS', '');
+    // define('DB_NAME', 'school_db');
+    // define('DB_PORT', 3306);
 
 }
 
