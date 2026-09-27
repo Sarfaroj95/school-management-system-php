@@ -144,4 +144,146 @@ if (!function_exists('can_manage_notices')) {
         return has_role(['Super Admin', 'Admin', 'Staff']);
     }
 }
+
+if (!function_exists('can_manage_settings')) {
+    function can_manage_settings() {
+        return has_role(['Super Admin', 'Admin']);
+    }
+}
+
+// 4. Role Section Permissions Matrix & Capability Helpers
+if (!function_exists('get_role_permissions_matrix')) {
+    function get_role_permissions_matrix() {
+        return [
+            'Super Admin' => [
+                'dashboard'   => ['name' => 'Dashboard Overview', 'access' => true, 'actions' => ['view', 'manage', 'analytics']],
+                'students'    => ['name' => 'Student Management', 'access' => true, 'actions' => ['view', 'create', 'edit', 'delete']],
+                'teachers'    => ['name' => 'Faculty / Teachers', 'access' => true, 'actions' => ['view', 'create', 'edit', 'delete']],
+                'classes'     => ['name' => 'Classes & Sections', 'access' => true, 'actions' => ['view', 'create', 'edit', 'delete']],
+                'attendance'  => ['name' => 'Attendance Portal',  'access' => true, 'actions' => ['view', 'mark', 'edit', 'export']],
+                'results'     => ['name' => 'Grades & Exams',      'access' => true, 'actions' => ['view', 'grade', 'publish', 'delete']],
+                'library'     => ['name' => 'Library Catalog',     'access' => true, 'actions' => ['view', 'issue', 'return', 'manage']],
+                'notices'     => ['name' => 'Notice Board',        'access' => true, 'actions' => ['view', 'post', 'edit', 'delete']],
+                'reports'     => ['name' => 'Reports & Analytics', 'access' => true, 'actions' => ['view', 'generate', 'export']],
+                'settings'    => ['name' => 'System & Users Settings', 'access' => true, 'actions' => ['view', 'manage_users', 'config']]
+            ],
+            'Admin' => [
+                'dashboard'   => ['name' => 'Dashboard Overview', 'access' => true, 'actions' => ['view', 'manage', 'analytics']],
+                'students'    => ['name' => 'Student Management', 'access' => true, 'actions' => ['view', 'create', 'edit', 'delete']],
+                'teachers'    => ['name' => 'Faculty / Teachers', 'access' => true, 'actions' => ['view', 'create', 'edit', 'delete']],
+                'classes'     => ['name' => 'Classes & Sections', 'access' => true, 'actions' => ['view', 'create', 'edit', 'delete']],
+                'attendance'  => ['name' => 'Attendance Portal',  'access' => true, 'actions' => ['view', 'mark', 'edit', 'export']],
+                'results'     => ['name' => 'Grades & Exams',      'access' => true, 'actions' => ['view', 'grade', 'publish', 'delete']],
+                'library'     => ['name' => 'Library Catalog',     'access' => true, 'actions' => ['view', 'issue', 'return', 'manage']],
+                'notices'     => ['name' => 'Notice Board',        'access' => true, 'actions' => ['view', 'post', 'edit', 'delete']],
+                'reports'     => ['name' => 'Reports & Analytics', 'access' => true, 'actions' => ['view', 'generate', 'export']],
+                'settings'    => ['name' => 'System & Users Settings', 'access' => true, 'actions' => ['view', 'manage_users', 'config']]
+            ],
+            'Staff' => [
+                'dashboard'   => ['name' => 'Dashboard Overview', 'access' => true, 'actions' => ['view']],
+                'students'    => ['name' => 'Student Management', 'access' => true, 'actions' => ['view', 'create', 'edit']],
+                'teachers'    => ['name' => 'Faculty / Teachers', 'access' => true, 'actions' => ['view']],
+                'classes'     => ['name' => 'Classes & Sections', 'access' => true, 'actions' => ['view']],
+                'attendance'  => ['name' => 'Attendance Portal',  'access' => true, 'actions' => ['view', 'mark']],
+                'results'     => ['name' => 'Grades & Exams',      'access' => true, 'actions' => ['view']],
+                'library'     => ['name' => 'Library Catalog',     'access' => true, 'actions' => ['view', 'issue', 'return', 'manage']],
+                'notices'     => ['name' => 'Notice Board',        'access' => true, 'actions' => ['view', 'post']],
+                'reports'     => ['name' => 'Reports & Analytics', 'access' => true, 'actions' => ['view', 'generate']],
+                'settings'    => ['name' => 'System & Users Settings', 'access' => false, 'actions' => []]
+            ],
+            'Teacher' => [
+                'dashboard'   => ['name' => 'Faculty Dashboard',  'access' => true, 'actions' => ['view']],
+                'students'    => ['name' => 'Student Roster',      'access' => true, 'actions' => ['view']],
+                'teachers'    => ['name' => 'Faculty Directory',   'access' => false, 'actions' => []],
+                'classes'     => ['name' => 'Class Schedules',     'access' => true, 'actions' => ['view']],
+                'attendance'  => ['name' => 'Mark Attendance',     'access' => true, 'actions' => ['view', 'mark', 'edit']],
+                'results'     => ['name' => 'Gradebook & Marks',   'access' => true, 'actions' => ['view', 'grade']],
+                'library'     => ['name' => 'Library Catalog',     'access' => true, 'actions' => ['view']],
+                'notices'     => ['name' => 'Notice Board',        'access' => true, 'actions' => ['view']],
+                'reports'     => ['name' => 'Academic Reports',    'access' => false, 'actions' => []],
+                'settings'    => ['name' => 'System Settings',     'access' => false, 'actions' => []]
+            ],
+            'Student' => [
+                'dashboard'   => ['name' => 'Student Overview',    'access' => true, 'actions' => ['view']],
+                'students'    => ['name' => 'Classmate Roster',    'access' => false, 'actions' => []],
+                'teachers'    => ['name' => 'My Instructors',      'access' => false, 'actions' => []],
+                'classes'     => ['name' => 'My Enrolled Class',   'access' => false, 'actions' => []],
+                'attendance'  => ['name' => 'My Attendance History','access' => true, 'actions' => ['view']],
+                'results'     => ['name' => 'My Exam Report Card', 'access' => true, 'actions' => ['view', 'download']],
+                'library'     => ['name' => 'Library Catalog',     'access' => true, 'actions' => ['view', 'search']],
+                'notices'     => ['name' => 'School Notice Board', 'access' => true, 'actions' => ['view']],
+                'reports'     => ['name' => 'Performance Reports', 'access' => false, 'actions' => []],
+                'settings'    => ['name' => 'System Settings',     'access' => false, 'actions' => []]
+            ]
+        ];
+    }
+}
+
+if (!function_exists('can_access_section')) {
+    function can_access_section($section_name, $role = null) {
+        if ($role === null) {
+            $role = get_user_role();
+        }
+        $matrix = get_role_permissions_matrix();
+        return isset($matrix[$role][$section_name]) && $matrix[$role][$section_name]['access'] === true;
+    }
+}
+
+// 5. Unique Username & Temporary Password Generators
+if (!function_exists('generate_temp_password')) {
+    function generate_temp_password($length = 8) {
+        $chars = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789!@#$';
+        $pass = '';
+        $max = strlen($chars) - 1;
+        for ($i = 0; $i < $length; $i++) {
+            $pass .= $chars[random_int(0, $max)];
+        }
+        return $pass;
+    }
+}
+
+if (!function_exists('generate_unique_username')) {
+    function generate_unique_username($role, $conn) {
+        $prefix = 'USR';
+        $table = 'admins';
+        $column = 'username';
+
+        if ($role === 'Super Admin' || $role === 'Admin') {
+            $prefix = 'ADM';
+            $table = 'admins';
+            $column = 'username';
+        } elseif ($role === 'Staff') {
+            $prefix = 'STF';
+            $table = 'admins';
+            $column = 'username';
+        } elseif ($role === 'Teacher') {
+            $prefix = 'EMP';
+            $table = 'teachers';
+            $column = 'emp_id';
+        } elseif ($role === 'Student') {
+            $prefix = 'STD';
+            $table = 'students';
+            $column = 'roll_no';
+        }
+
+        $unique = false;
+        $candidate = '';
+        $counter = 101;
+
+        // Find max existing number
+        $query = "SELECT $column FROM $table WHERE $column LIKE '{$prefix}%' ORDER BY id DESC LIMIT 20";
+        $res = @mysqli_query($conn, $query);
+        if ($res) {
+            while ($row = mysqli_fetch_assoc($res)) {
+                $val = $row[$column];
+                preg_match('/\d+/', $val, $matches);
+                if (!empty($matches[0]) && intval($matches[0]) >= $counter) {
+                    $counter = intval($matches[0]) + 1;
+                }
+            }
+        }
+
+        return $prefix . '-' . $counter;
+    }
+}
 ?>

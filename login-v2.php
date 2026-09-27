@@ -1,6 +1,6 @@
 <?php
 /**
- * Unified Multi-Role Authentication Portal
+ * Unified Multi-Role Authentication Portal (v2)
  * Supports roles: Super Admin, Admin, Staff, Teacher, Student
  * Uses centralized database connection and prepared statements.
  */
@@ -218,7 +218,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multi-Role Portal Login - EduCore SMS</title>
+    <title>Multi-Role Portal Login (v2) - EduCore SMS</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -324,6 +324,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             color: #fca5a5;
         }
 
+        .role-chips {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 20px;
+            background: rgba(15, 23, 42, 0.6);
+            padding: 4px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+        }
+
+        .role-chip {
+            flex: 1;
+            text-align: center;
+            padding: 8px 4px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            background: transparent;
+            font-family: inherit;
+        }
+
+        .role-chip:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .role-chip.active {
+            background: var(--primary);
+            color: #ffffff;
+            box-shadow: 0 2px 10px rgba(79, 70, 229, 0.45);
+        }
+
         .form-group {
             display: flex;
             flex-direction: column;
@@ -383,9 +419,63 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             transform: translateY(0);
         }
 
+        .demo-badges {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-top: 14px;
+            text-align: left;
+        }
+
+        .demo-item {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid var(--border-color);
+            padding: 8px 10px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.15s ease-in-out;
+        }
+
+        .demo-item:hover {
+            border-color: #38bdf8;
+            background: rgba(56, 189, 248, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .demo-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+        }
+
+        .demo-val {
+            font-size: 12px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            color: #cbd5e1;
+        }
+
+        code {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: inherit;
+            color: #e2e8f0;
+        }
+
         @media (max-width: 480px) {
             .auth-card {
                 padding: 24px 18px;
+            }
+            .role-chips {
+                flex-wrap: wrap;
+            }
+            .role-chip {
+                min-width: 45%;
+            }
+            .demo-badges {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -396,7 +486,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="auth-header">
             <div class="auth-logo">S</div>
             <h1 style="font-size: 24px; font-weight: 800; margin-bottom: 6px;">EduCore SMS</h1>
-            <p style="color: var(--text-secondary); font-size: 14px;">Unified Multi-Role Institutional Portal</p>
+            <p style="color: var(--text-secondary); font-size: 14px;">Unified Multi-Role Institutional Portal (v2)</p>
         </div>
 
         <?php if (!empty($error)): ?>
@@ -406,23 +496,99 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif; ?>
 
         <form action="" method="POST" id="loginForm">
-            <input type="hidden" name="role_type" value="auto">
+            <input type="hidden" name="role_type" id="role_type" value="<?php echo htmlspecialchars($selected_role); ?>">
+
+            <!-- Role Selector Chips -->
+            <div class="role-chips">
+                <button type="button" class="role-chip <?php echo ($selected_role === 'auto') ? 'active' : ''; ?>" onclick="selectRole('auto')">Auto-Detect</button>
+                <button type="button" class="role-chip <?php echo ($selected_role === 'admin') ? 'active' : ''; ?>" onclick="selectRole('admin')">Admin</button>
+                <button type="button" class="role-chip <?php echo ($selected_role === 'staff') ? 'active' : ''; ?>" onclick="selectRole('staff')">Staff</button>
+                <button type="button" class="role-chip <?php echo ($selected_role === 'teacher') ? 'active' : ''; ?>" onclick="selectRole('teacher')">Teacher</button>
+                <button type="button" class="role-chip <?php echo ($selected_role === 'student') ? 'active' : ''; ?>" onclick="selectRole('student')">Student</button>
+            </div>
 
             <div class="form-group" style="margin-bottom: 16px;">
-                <label class="form-label" for="username">Username / Email / ID / Roll No</label>
-                <input type="text" id="username" name="username" class="form-control" placeholder="e.g. Username, Email, Roll No or Emp ID" required autofocus value="<?php echo htmlspecialchars($_POST['username'] ?? ''); ?>">
+                <label class="form-label" for="username" id="identifierLabel">Username / Email / ID / Roll No</label>
+                <input type="text" id="username" name="username" class="form-control" placeholder="e.g. admin or EMP101 or STD-1001" required autofocus value="<?php echo htmlspecialchars($_POST['username'] ?? 'admin'); ?>">
             </div>
 
             <div class="form-group" style="margin-bottom: 22px;">
                 <label class="form-label" for="password">Password</label>
-                <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required value="">
+                <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required value="admin123">
             </div>
 
             <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 15px; font-weight: 700;">
                 Sign In to Dashboard
             </button>
         </form>
+
+        <!-- Quick-Fill Demo Cards -->
+        <div style="margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--border-color); font-size: 12px; color: var(--text-muted); text-align: center;">
+            <p style="font-weight: 700; color: #94a3b8; margin-bottom: 8px;">⚡ 1-Click Demo Accounts to Test Roles:</p>
+            <div class="demo-badges">
+                <div class="demo-item" onclick="quickFill('admin', 'admin', 'admin123', 'admin')">
+                    <div class="demo-title" style="color: #ef4444;">Super Admin</div>
+                    <div class="demo-val">ID: <strong>admin</strong></div>
+                </div>
+                <div class="demo-item" onclick="quickFill('staff', 'staff', 'admin123', 'staff')">
+                    <div class="demo-title" style="color: #3b82f6;">Staff Member</div>
+                    <div class="demo-val">ID: <strong>staff</strong></div>
+                </div>
+                <div class="demo-item" onclick="quickFill('teacher', 'EMP101', 'admin123', 'teacher')">
+                    <div class="demo-title" style="color: #10b981;">Teacher / Faculty</div>
+                    <div class="demo-val">ID: <strong>EMP101</strong></div>
+                </div>
+                <div class="demo-item" onclick="quickFill('student', 'STD-1001', 'admin123', 'student')">
+                    <div class="demo-title" style="color: #f59e0b;">Student Portal</div>
+                    <div class="demo-val">ID: <strong>STD-1001</strong></div>
+                </div>
+            </div>
+            <div style="margin-top: 10px; font-size: 11px; color: #64748b;">
+                Default test password for all accounts: <code>admin123</code>
+            </div>
+        </div>
     </div>
 </div>
+
+<script>
+function selectRole(role) {
+    document.getElementById('role_type').value = role;
+    document.querySelectorAll('.role-chip').forEach(function(el) {
+        el.classList.remove('active');
+    });
+    event.target.classList.add('active');
+    
+    var label = document.getElementById('identifierLabel');
+    var input = document.getElementById('username');
+    if (role === 'admin') {
+        label.innerText = 'Admin Username or Email';
+        input.placeholder = 'e.g. admin';
+    } else if (role === 'staff') {
+        label.innerText = 'Staff Username or Email';
+        input.placeholder = 'e.g. staff';
+    } else if (role === 'teacher') {
+        label.innerText = 'Teacher Employee ID or Email';
+        input.placeholder = 'e.g. EMP101 or r.jenkins@schoolsms.edu';
+    } else if (role === 'student') {
+        label.innerText = 'Student Roll Number or Email';
+        input.placeholder = 'e.g. STD-1001 or alex.j@example.com';
+    } else {
+        label.innerText = 'Username / Email / ID / Roll No';
+        input.placeholder = 'e.g. admin or EMP101 or STD-1001';
+    }
+}
+
+function quickFill(role, user, pass, tabRole) {
+    document.getElementById('username').value = user;
+    document.getElementById('password').value = pass;
+    document.getElementById('role_type').value = tabRole;
+    document.querySelectorAll('.role-chip').forEach(function(el) {
+        el.classList.remove('active');
+        if (el.innerText.toLowerCase().indexOf(tabRole) !== -1) {
+            el.classList.add('active');
+        }
+    });
+}
+</script>
 </body>
 </html>

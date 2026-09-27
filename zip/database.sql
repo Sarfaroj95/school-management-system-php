@@ -1,16 +1,19 @@
 -- ==========================================================
--- School Management System (SMS) Database Schema & Seed Data
--- Centralized MySQL Database: school_db
--- Ready for XAMPP / WAMP / MySQL 5.7+ / MariaDB 10.x+
+-- School Management System (SMS) Complete Database Export
+-- Database: `school_db`
+-- Target Server: MySQL 5.7+ / MariaDB 10.x+ (XAMPP / WAMP / cPanel)
+-- Character Set: utf8mb4 / utf8mb4_unicode_ci
 -- ==========================================================
 
-CREATE DATABASE IF NOT EXISTS `school_db` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE `school_db`;
+-- CREATE DATABASE IF NOT EXISTS `school_db` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+-- USE `school_db`;
 
 SET FOREIGN_KEY_CHECKS = 0;
+SET SQL_MODE = 'NO_AUTO_VALUE_ON_ZERO';
+SET time_zone = '+00:00';
 
 -- --------------------------------------------------------
--- Table: admins
+-- Table structure for table `admins`
 -- --------------------------------------------------------
 DROP TABLE IF EXISTS `admins`;
 CREATE TABLE `admins` (
@@ -22,18 +25,18 @@ CREATE TABLE `admins` (
   `role` ENUM('Super Admin', 'Admin', 'Staff') NOT NULL DEFAULT 'Admin',
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Seed default admin account (Password: admin123)
--- Uses standard password hash for password_verify() as well as md5 compatibility
+-- Dumping data for table `admins`
+-- Default test accounts:
+-- 1. admin / admin123 (Super Admin)
+-- 2. staff / admin123 (Staff)
 INSERT INTO `admins` (`id`, `username`, `password`, `full_name`, `email`, `role`, `created_at`) VALUES
 (1, 'admin', '$2y$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', 'System Administrator', 'admin@schoolsms.edu', 'Super Admin', NOW()),
-(2, 'staff', '$2y$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', 'Academic Staff', 'staff@schoolsms.edu', 'Staff', NOW());
+(2, 'staff', '$2y$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', 'Academic Staff Officer', 'staff@schoolsms.edu', 'Staff', NOW());
 
 -- --------------------------------------------------------
--- Table: teachers
--- --------------------------------------------------------
--- Table: teachers
+-- Table structure for table `teachers`
 -- --------------------------------------------------------
 DROP TABLE IF EXISTS `teachers`;
 CREATE TABLE `teachers` (
@@ -50,8 +53,10 @@ CREATE TABLE `teachers` (
   `status` ENUM('Active', 'On Leave', 'Resigned') NOT NULL DEFAULT 'Active',
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Dumping data for table `teachers`
+-- Password for all seed teachers: admin123
 INSERT INTO `teachers` (`id`, `emp_id`, `name`, `email`, `password`, `phone`, `qualification`, `subject_specialization`, `joining_date`, `salary`, `status`, `created_at`) VALUES
 (1, 'EMP101', 'Dr. Robert Jenkins', 'r.jenkins@schoolsms.edu', '$2y$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', '+1 (555) 234-5678', 'Ph.D in Mathematics', 'Mathematics', '2021-08-15', 4800.00, 'Active', NOW()),
 (2, 'EMP102', 'Sarah Mitchell', 's.mitchell@schoolsms.edu', '$2y$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', '+1 (555) 345-6789', 'M.Sc in Physics', 'Physical Science', '2022-01-10', 4200.00, 'Active', NOW()),
@@ -60,7 +65,7 @@ INSERT INTO `teachers` (`id`, `emp_id`, `name`, `email`, `password`, `phone`, `q
 (5, 'EMP105', 'Michael Chang', 'm.chang@schoolsms.edu', '$2y$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', '+1 (555) 678-9012', 'M.Sc in Chemistry', 'Chemistry', '2021-11-20', 4300.00, 'Active', NOW());
 
 -- --------------------------------------------------------
--- Table: classes
+-- Table structure for table `classes`
 -- --------------------------------------------------------
 DROP TABLE IF EXISTS `classes`;
 CREATE TABLE `classes` (
@@ -74,8 +79,9 @@ CREATE TABLE `classes` (
   PRIMARY KEY (`id`),
   KEY `fk_class_teacher` (`teacher_id`),
   CONSTRAINT `fk_class_teacher` FOREIGN KEY (`teacher_id`) REFERENCES `teachers` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Dumping data for table `classes`
 INSERT INTO `classes` (`id`, `class_name`, `section`, `room_no`, `teacher_id`, `capacity`, `created_at`) VALUES
 (1, 'Grade 5', 'A', 'Room 101', 1, 35, NOW()),
 (2, 'Grade 6', 'A', 'Room 102', 2, 35, NOW()),
@@ -85,7 +91,7 @@ INSERT INTO `classes` (`id`, `class_name`, `section`, `room_no`, `teacher_id`, `
 (6, 'Grade 10', 'A', 'Room 302', 1, 45, NOW());
 
 -- --------------------------------------------------------
--- Table: students
+-- Table structure for table `students`
 -- --------------------------------------------------------
 DROP TABLE IF EXISTS `students`;
 CREATE TABLE `students` (
@@ -108,8 +114,10 @@ CREATE TABLE `students` (
   PRIMARY KEY (`id`),
   KEY `fk_student_class` (`class_id`),
   CONSTRAINT `fk_student_class` FOREIGN KEY (`class_id`) REFERENCES `classes` (`id`) ON DELETE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Dumping data for table `students`
+-- Password for all seed students: admin123
 INSERT INTO `students` (`id`, `roll_no`, `first_name`, `last_name`, `gender`, `dob`, `email`, `password`, `phone`, `address`, `class_id`, `admission_date`, `parent_name`, `parent_phone`, `status`, `created_at`) VALUES
 (1, 'STD-1001', 'Alex', 'Johnson', 'Male', '2010-04-12', 'alex.j@example.com', '$2y$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', '+1 555-0101', '742 Evergreen Terrace, Springfield', 6, '2023-06-01', 'Arthur Johnson', '+1 555-0199', 'Active', NOW()),
 (2, 'STD-1002', 'Emma', 'Watson', 'Female', '2010-09-24', 'emma.w@example.com', '$2y$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', '+1 555-0102', '124 Conch Street, Bikini Bottom', 6, '2023-06-01', 'Chris Watson', '+1 555-0198', 'Active', NOW()),
@@ -123,7 +131,7 @@ INSERT INTO `students` (`id`, `roll_no`, `first_name`, `last_name`, `gender`, `d
 (10, 'STD-1010', 'Mia', 'Garcia', 'Female', '2015-08-05', 'mia.g@example.com', '$2y$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', '+1 555-0110', '420 Paper Street, Wilmington', 1, '2023-06-15', 'Hector Garcia', '+1 555-0190', 'Active', NOW());
 
 -- --------------------------------------------------------
--- Table: subjects
+-- Table structure for table `subjects`
 -- --------------------------------------------------------
 DROP TABLE IF EXISTS `subjects`;
 CREATE TABLE `subjects` (
@@ -138,8 +146,9 @@ CREATE TABLE `subjects` (
   KEY `fk_subject_teacher` (`teacher_id`),
   CONSTRAINT `fk_subject_class` FOREIGN KEY (`class_id`) REFERENCES `classes` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_subject_teacher` FOREIGN KEY (`teacher_id`) REFERENCES `teachers` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Dumping data for table `subjects`
 INSERT INTO `subjects` (`id`, `subject_name`, `subject_code`, `class_id`, `teacher_id`, `created_at`) VALUES
 (1, 'Advanced Mathematics', 'MATH-10', 6, 1, NOW()),
 (2, 'Physics & Mechanics', 'PHY-10', 6, 2, NOW()),
@@ -149,7 +158,7 @@ INSERT INTO `subjects` (`id`, `subject_name`, `subject_code`, `class_id`, `teach
 (6, 'Chemistry Fundamentals', 'CHEM-10', 6, 5, NOW());
 
 -- --------------------------------------------------------
--- Table: attendance
+-- Table structure for table `attendance`
 -- --------------------------------------------------------
 DROP TABLE IF EXISTS `attendance`;
 CREATE TABLE `attendance` (
@@ -166,8 +175,9 @@ CREATE TABLE `attendance` (
   KEY `fk_att_class` (`class_id`),
   CONSTRAINT `fk_att_student` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_att_class` FOREIGN KEY (`class_id`) REFERENCES `classes` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Dumping data for table `attendance`
 INSERT INTO `attendance` (`student_id`, `class_id`, `attendance_date`, `status`, `remarks`, `created_at`) VALUES
 (1, 6, CURDATE(), 'Present', 'On time', NOW()),
 (2, 6, CURDATE(), 'Present', 'On time', NOW()),
@@ -181,7 +191,7 @@ INSERT INTO `attendance` (`student_id`, `class_id`, `attendance_date`, `status`,
 (10, 1, CURDATE(), 'Present', 'On time', NOW());
 
 -- --------------------------------------------------------
--- Table: marks
+-- Table structure for table `marks`
 -- --------------------------------------------------------
 DROP TABLE IF EXISTS `marks`;
 CREATE TABLE `marks` (
@@ -200,8 +210,9 @@ CREATE TABLE `marks` (
   KEY `fk_marks_subject` (`subject_id`),
   CONSTRAINT `fk_marks_student` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_marks_subject` FOREIGN KEY (`subject_id`) REFERENCES `subjects` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Dumping data for table `marks`
 INSERT INTO `marks` (`id`, `student_id`, `subject_id`, `exam_name`, `marks_obtained`, `max_marks`, `grade`, `remarks`, `exam_date`, `created_at`) VALUES
 (1, 1, 1, 'Midterm Exam', 94.50, 100.00, 'A+', 'Outstanding problem solving', '2024-03-15', NOW()),
 (2, 1, 2, 'Midterm Exam', 88.00, 100.00, 'A', 'Solid laboratory concepts', '2024-03-17', NOW()),
@@ -211,7 +222,7 @@ INSERT INTO `marks` (`id`, `student_id`, `subject_id`, `exam_name`, `marks_obtai
 (6, 3, 4, 'Midterm Exam', 89.00, 100.00, 'A', 'Great practical programming', '2024-03-20', NOW());
 
 -- --------------------------------------------------------
--- Table: library_books
+-- Table structure for table `library_books`
 -- --------------------------------------------------------
 DROP TABLE IF EXISTS `library_books`;
 CREATE TABLE `library_books` (
@@ -225,8 +236,9 @@ CREATE TABLE `library_books` (
   `rack_no` VARCHAR(20) NOT NULL,
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Dumping data for table `library_books`
 INSERT INTO `library_books` (`id`, `book_title`, `isbn`, `author`, `category`, `quantity`, `available_copies`, `rack_no`, `created_at`) VALUES
 (1, 'Introduction to Algorithms, 4th Edition', '978-0262046305', 'Thomas H. Cormen', 'Computer Science', 5, 4, 'Rack CS-01', NOW()),
 (2, 'Concepts of Modern Physics', '978-0072448481', 'Arthur Beiser', 'Science', 8, 7, 'Rack SC-03', NOW()),
@@ -235,7 +247,7 @@ INSERT INTO `library_books` (`id`, `book_title`, `isbn`, `author`, `category`, `
 (5, 'Oxford English Grammar Course: Advanced', '978-0194414906', 'Michael Swan', 'Literature', 12, 12, 'Rack EN-05', NOW());
 
 -- --------------------------------------------------------
--- Table: book_issues
+-- Table structure for table `book_issues`
 -- --------------------------------------------------------
 DROP TABLE IF EXISTS `book_issues`;
 CREATE TABLE `book_issues` (
@@ -252,15 +264,16 @@ CREATE TABLE `book_issues` (
   KEY `fk_issue_student` (`student_id`),
   CONSTRAINT `fk_issue_book` FOREIGN KEY (`book_id`) REFERENCES `library_books` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_issue_student` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Dumping data for table `book_issues`
 INSERT INTO `book_issues` (`id`, `book_id`, `student_id`, `issue_date`, `due_date`, `return_date`, `status`, `created_at`) VALUES
 (1, 1, 1, CURDATE() - INTERVAL 5 DAY, CURDATE() + INTERVAL 9 DAY, NULL, 'Issued', NOW()),
 (2, 2, 2, CURDATE() - INTERVAL 12 DAY, CURDATE() + INTERVAL 2 DAY, NULL, 'Issued', NOW()),
 (3, 4, 3, CURDATE() - INTERVAL 20 DAY, CURDATE() - INTERVAL 6 DAY, NULL, 'Overdue', NOW());
 
 -- --------------------------------------------------------
--- Table: notices
+-- Table structure for table `notices`
 -- --------------------------------------------------------
 DROP TABLE IF EXISTS `notices`;
 CREATE TABLE `notices` (
@@ -272,11 +285,38 @@ CREATE TABLE `notices` (
   `posted_by` VARCHAR(100) NOT NULL DEFAULT 'Administration',
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Dumping data for table `notices`
 INSERT INTO `notices` (`id`, `title`, `content`, `target_audience`, `priority`, `posted_by`, `created_at`) VALUES
 (1, 'Annual Science & Tech Fair 2026', 'We are thrilled to announce the Annual Science Fair scheduled for next month. All students from grades 6 through 10 are encouraged to register their project proposals with their science instructors by Friday.', 'All', 'Important', 'Principal Office', NOW() - INTERVAL 2 DAY),
 (2, 'Term Examination Schedule Released', 'The upcoming semester examination timetable has been officially finalized and published. Please verify your subject timings and room allocations on the student portal.', 'Students', 'Urgent', 'Examination Cell', NOW() - INTERVAL 1 DAY),
 (3, 'Faculty Meeting: Curriculum Review', 'All teachers and department heads are requested to attend a mandatory curriculum review session this Wednesday at 3:30 PM in the Conference Hall.', 'Teachers', 'Normal', 'Vice Principal', NOW());
 
+-- --------------------------------------------------------
+-- Table structure for table `system_settings`
+-- --------------------------------------------------------
+DROP TABLE IF EXISTS `system_settings`;
+CREATE TABLE `system_settings` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `setting_key` VARCHAR(50) NOT NULL UNIQUE,
+  `setting_value` TEXT NOT NULL,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Dumping data for table `system_settings`
+INSERT INTO `system_settings` (`setting_key`, `setting_value`) VALUES
+('school_name', 'EduCore Model International School'),
+('school_email', 'contact@educore-sms.edu'),
+('school_phone', '+1 (555) 019-2834'),
+('academic_year', '2026-2027'),
+('currency_symbol', '$'),
+('school_address', '100 University Avenue, Tech Park, Suite 400')
+ON DUPLICATE KEY UPDATE `setting_value` = VALUES(`setting_value`);
+
 SET FOREIGN_KEY_CHECKS = 1;
+
+-- ==========================================================
+-- Export Completed Successfully
+-- ==========================================================

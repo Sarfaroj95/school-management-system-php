@@ -9,10 +9,13 @@ RewriteEngine On
 # 1. Rewrite /login and /login/ to login.php
 RewriteRule ^login/?$ login.php [L,QSA]
 
-# 2. Rewrite /logout and /logout/ to logout.php
+# 2. Rewrite /login-v2 and /login-v2/ to login-v2.php
+RewriteRule ^login-v2/?$ login-v2.php [L,QSA]
+
+# 3. Rewrite /logout and /logout/ to logout.php
 RewriteRule ^logout/?$ logout.php [L,QSA]
 
-# 3. Remove .php extension from URLs if requested without .php
+# 4. Remove .php extension from URLs if requested without .php
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME}\.php -f
 RewriteRule ^([^\.]+)$ $1.php [NC,L,QSA]

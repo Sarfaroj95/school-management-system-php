@@ -1,24 +1,10 @@
 <?php
-session_start();
-include "connection.php";
-if(isset($_POST['submit']))
-{
- $a=$_POST['user'];
- $b=$_POST['pass'];
- 
- $qer=mysqli_query($conn,"select * from admin_login where user='$a' and pass='$b'");
- if(mysqli_num_rows($qer)==1)
- {
- 	$log=mysqli_fetch_assoc($qer);
-	$_SESSION['sid']=$log['id'];
- 
-   echo "<script>alert('success login'); window.location.href='admin_profile.php';</script>";
- }
- else
- {
- 	echo "<script>alert('unsuccess login'); window.location.href='admin_login.php';</script>";
- }
-}
+/**
+ * Legacy Admin Login Redirect
+ * Redirects to the unified modern authentication portal
+ */
+header("Location: login.php");
+exit();
 ?>
 <!DOCTYPE html>
 <html>

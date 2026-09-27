@@ -106,6 +106,10 @@ Place the project inside your XAMPP or WAMP web root directory:
 Visit the project URL in your browser:
 ```
 http://localhost/school-management-system-php/
+
+https://my-school-dev.free.je/
+
+
 ```
 
 ### Step 5: Log In

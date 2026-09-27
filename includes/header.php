@@ -13,7 +13,7 @@ $page_title = isset($page_title) ? $page_title . ' - EduCore SMS' : 'EduCore Sch
     <title><?php echo htmlspecialchars($page_title); ?></title>
     
     <!-- Design System Stylesheet -->
-    <link rel="stylesheet" href="<?php echo $root_path; ?>assets/css/style.css">
+    <link rel="stylesheet" href="<?php echo $root_path; ?>assets/css/style.css?v=<?php echo @filemtime(__DIR__ . '/../assets/css/style.css') ?: time(); ?>">
 </head>
 <body>
 <div class="app-container">

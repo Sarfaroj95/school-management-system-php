@@ -136,9 +136,43 @@ a {
 }
 
 .sidebar-nav {
-  padding: 20px 14px;
+  padding: 12px 10px;
   overflow-y: auto;
+  overflow-x: hidden;
   flex: 1;
+  /* Firefox auto-hide scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+  transition: scrollbar-color 0.3s ease;
+}
+
+.sidebar:hover .sidebar-nav,
+.sidebar-nav:hover {
+  scrollbar-color: rgba(255, 255, 255, 0.22) transparent;
+}
+
+/* Chrome, Edge, Safari WebKit Scrollbar (Width: 5px) */
+.sidebar-nav::-webkit-scrollbar {
+  width: 5px;
+}
+
+.sidebar-nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 9999px;
+  transition: background 0.25s ease;
+}
+
+.sidebar:hover .sidebar-nav::-webkit-scrollbar-thumb,
+.sidebar-nav:hover::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.4);
 }
 
 .nav-group-title {
@@ -155,15 +189,17 @@ a {
   align-items: center;
   gap: 12px;
   padding: 10px 14px;
+  min-height: 42px;
   border-radius: var(--radius-md);
   color: var(--text-secondary);
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 500;
   margin-bottom: 4px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .nav-link:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.06);
   color: var(--text-primary);
   transform: translateX(3px);
 }
@@ -171,7 +207,7 @@ a {
 .nav-link.active {
   background: var(--primary);
   color: #ffffff;
-  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);
   font-weight: 600;
 }
 
@@ -179,6 +215,7 @@ a {
   width: 18px;
   height: 18px;
   opacity: 0.85;
+  flex-shrink: 0;
 }
 
 .nav-link.active svg {
@@ -451,7 +488,7 @@ a {
 }
 
 .data-table td {
-  padding: 14px 18px;
+  padding: 12px 18px;
   border-bottom: 1px solid var(--border-color);
   color: #cbd5e1;
   vertical-align: middle;

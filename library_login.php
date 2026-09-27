@@ -1,27 +1,11 @@
-
 <?php
-
-        session_start();
-		include "connection.php";
-		if(isset($_POST['submit']))
-		{
-			$a=$_POST['email'];
-			$b=$_POST['password'];
-		
-			$qer=mysqli_query($conn,"select * from library_log where mail='$a' and pass='$b'");
-			if(mysqli_num_rows($qer)==1)
-			{
-				$log=mysqli_fetch_assoc($qer);
-				$_SESSION['sid']=$log['id'];
-				
-				 echo "<script>alert('success login'); window.location.href='library_profile.php';</script>";
-			}
-			else
-			{
-				 echo "<script>alert(' Please Currect Username & Password'); window.location.href='library_login.php';</script>";
-			}
-		}
-		?>
+/**
+ * Legacy Library Login Redirect
+ * Redirects to the unified modern authentication portal
+ */
+header("Location: login.php");
+exit();
+?>
 
 
 

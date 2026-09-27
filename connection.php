@@ -20,18 +20,22 @@ if (session_status() === PHP_SESSION_NONE) {
 // Database Credentials (Supports both Remote InfinityFree & Local XAMPP/WAMP)
 if (!defined('DB_HOST')) {
     // Remote DB (InfinityFree)
-    define('DB_HOST', 'sql311.infinityfree.com');
-    define('DB_USER', 'if0_42904158');
-    define('DB_PASS', 'QdAc5aHcOV');
-    define('DB_NAME', 'if0_42904158_school_management');
-    define('DB_PORT', 3306);
-    
-    // For Local XAMPP/WAMP:
-    // define('DB_HOST', 'localhost');
-    // define('DB_USER', 'root');
-    // define('DB_PASS', '');
-    // define('DB_NAME', 'school_db');
+
+    // define('DB_HOST', 'sql311.infinityfree.com');
+    // define('DB_USER', 'if0_42904158');
+    // define('DB_PASS', 'QdAc5aHcOV');
+    // define('DB_NAME', 'if0_42904158_school_management_db');
     // define('DB_PORT', 3306);
+
+
+    // For Local XAMPP/WAMP:
+
+    define('DB_HOST', 'localhost');
+    define('DB_USER', 'root');
+    define('DB_PASS', '');
+    define('DB_NAME', 'school_db');
+    define('DB_PORT', 3306);
+
 }
 
 // Disable internal MySQL exception throwing to handle errors gracefully
@@ -289,6 +293,26 @@ function ensure_tables_exist($conn) {
     if ($check_student_pass && mysqli_num_rows($check_student_pass) === 0) {
         @mysqli_query($conn, "ALTER TABLE `students` ADD COLUMN `password` VARCHAR(255) NOT NULL DEFAULT '$2y$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW' AFTER `email`");
     }
+
+    // Auto-migrate schema: Ensure system_settings table exists
+    @mysqli_query($conn, "CREATE TABLE IF NOT EXISTS `system_settings` (
+        `id` INT(11) NOT NULL AUTO_INCREMENT,
+        `setting_key` VARCHAR(50) NOT NULL UNIQUE,
+        `setting_value` TEXT NOT NULL,
+        `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
+    // Insert default system settings if not already present
+    @mysqli_query($conn, "INSERT IGNORE INTO `system_settings` (`setting_key`, `setting_value`) VALUES 
+        ('school_name', 'EduCore Model International School'),
+        ('school_email', 'contact@educore-sms.edu'),
+        ('school_phone', '+1 (555) 019-2834'),
+        ('school_address', '100 University Avenue, Tech Park, Suite 400'),
+        ('academic_year', '2026-2027'),
+        ('currency_symbol', '$'),
+        ('allow_student_registration', '0'),
+        ('theme_mode', 'dark')");
 }
 
 // Automatically ensure tables exist
