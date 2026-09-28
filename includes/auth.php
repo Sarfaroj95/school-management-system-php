@@ -161,6 +161,12 @@ if (!function_exists('can_manage_settings')) {
     }
 }
 
+if (!function_exists('can_manage_subjects')) {
+    function can_manage_subjects() {
+        return has_role(['Super Admin', 'Admin']);
+    }
+}
+
 // 4. Role Section Permissions Matrix & Capability Helpers
 if (!function_exists('get_role_permissions_matrix')) {
     function get_role_permissions_matrix() {
@@ -170,6 +176,7 @@ if (!function_exists('get_role_permissions_matrix')) {
                 'students'    => ['name' => 'Student Management', 'access' => true, 'actions' => ['view', 'create', 'edit', 'delete']],
                 'teachers'    => ['name' => 'Faculty / Teachers', 'access' => true, 'actions' => ['view', 'create', 'edit', 'delete']],
                 'classes'     => ['name' => 'Classes & Sections', 'access' => true, 'actions' => ['view', 'create', 'edit', 'delete']],
+                'subjects'    => ['name' => 'Subjects & Curriculum', 'access' => true, 'actions' => ['view', 'create', 'edit', 'delete']],
                 'attendance'  => ['name' => 'Attendance Portal',  'access' => true, 'actions' => ['view', 'mark', 'edit', 'export']],
                 'results'     => ['name' => 'Grades & Exams',      'access' => true, 'actions' => ['view', 'grade', 'publish', 'delete']],
                 'library'     => ['name' => 'Library Catalog',     'access' => true, 'actions' => ['view', 'issue', 'return', 'manage']],
@@ -182,6 +189,7 @@ if (!function_exists('get_role_permissions_matrix')) {
                 'students'    => ['name' => 'Student Management', 'access' => true, 'actions' => ['view', 'create', 'edit', 'delete']],
                 'teachers'    => ['name' => 'Faculty / Teachers', 'access' => true, 'actions' => ['view', 'create', 'edit', 'delete']],
                 'classes'     => ['name' => 'Classes & Sections', 'access' => true, 'actions' => ['view', 'create', 'edit', 'delete']],
+                'subjects'    => ['name' => 'Subjects & Curriculum', 'access' => true, 'actions' => ['view', 'create', 'edit', 'delete']],
                 'attendance'  => ['name' => 'Attendance Portal',  'access' => true, 'actions' => ['view', 'mark', 'edit', 'export']],
                 'results'     => ['name' => 'Grades & Exams',      'access' => true, 'actions' => ['view', 'grade', 'publish', 'delete']],
                 'library'     => ['name' => 'Library Catalog',     'access' => true, 'actions' => ['view', 'issue', 'return', 'manage']],
